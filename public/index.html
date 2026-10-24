@@ -78,14 +78,17 @@ td.n{direction:ltr;unicode-bidi:isolate;text-align:end}
 .seg{display:flex;flex-wrap:wrap;gap:8px}
 .seg label{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
 .seg input{width:20px;height:20px}
-.ai-links a{flex:1 1 140px}
+.report{margin-top:16px;border-top:1px solid var(--line);padding-top:8px}
+.report h3{font-size:1.1em;margin:1.1em 0 .3em}
+.report ul,.report ol{padding-inline-start:1.3em;margin:.3em 0}
+.report li{margin:.3em 0}
 canvas{max-width:100%;height:auto;border-radius:14px;display:block;margin:10px auto}
 footer{text-align:center;color:var(--muted);font-size:.8em;margin-top:28px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:9;max-width:90vw}
 @media print{
   body{background:#fff;color:#000}
   .card{break-inside:avoid;border-color:#ccc}
-  #start,#aiCard,#shareCard,button,.btn{display:none !important}
+  #start,#shareCard,button,.btn{display:none !important}
 }
 </style>
 </head>
@@ -148,28 +151,16 @@ footer{text-align:center;color:var(--muted);font-size:.8em;margin-top:28px}
   <section class="card" id="recordsCard"></section>
 
   <section class="card" id="aiCard">
-    <h2>🧠 רוצים ניתוח עומק? בחינם.</h2>
-    <p>{{persona}} מכין לכם פרומט עם הסטטיסטיקה וקטע מהשיחה. מדביקים אותו ב-ChatGPT, ב-Gemini או ב-Claude, בגרסה החינמית, ומקבלים דוח מלא שכתוב כמו ש-{{persona}} היה כותב.</p>
-    <h3>כמה מהשיחה לשלוח?</h3>
-    <div class="seg" id="sizeSeg">
-      <label><input type="radio" name="size" value="12000"> קצר</label>
-      <label><input type="radio" name="size" value="35000" checked> בינוני</label>
-      <label><input type="radio" name="size" value="90000"> ארוך</label>
-    </div>
-    <h3>פרטיות</h3>
+    <h2>🧠 הדוח המלא של {{persona}}</h2>
+    <p>{{persona}} קורא את השיחה עצמה וכותב דוח: מי יותר בעניין ולמה, דגלים אדומים וירוקים, בדיחות פנימיות, ציון לקשר ועצה לכל אחד.</p>
     <div class="seg">
       <label><input type="checkbox" id="anon"> להחליף שמות בכינויים</label>
     </div>
-    <p class="small muted">שימו לב: מה שמדביקים בצ'אט של בינה מלאכותית נשלח לחברה שמפעילה אותו. כאן בדף שום דבר לא נשלח.</p>
+    <p class="small muted">לדוח הזה קטע מהשיחה נשלח לניתוח אצל Gemini של גוגל. אנחנו לא שומרים אותו. כל מה שמופיע למעלה חושב בטלפון ולא נשלח לשום מקום.</p>
     <div class="row" style="margin-top:12px">
-      <button class="btn-primary" id="copyPrompt" type="button">📋 להעתיק את הפרומט</button>
-      <span class="small muted" id="promptInfo"></span>
+      <button class="btn-primary" id="aiBtn" type="button">✨ לקבל את הדוח המלא</button>
     </div>
-    <div class="row ai-links" style="margin-top:10px">
-      <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a>
-      <a class="btn" href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a>
-      <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a>
-    </div>
+    <div id="aiOut" class="report hidden"></div>
   </section>
 
   <section class="card" id="shareCard">
@@ -191,7 +182,9 @@ footer{text-align:center;color:var(--muted);font-size:.8em;margin-top:28px}
 
 <script>
 "use strict";
-const BUILD = "2026-10-24 20:44 v1 first";
+const BUILD = "2026-10-24 21:27 v2 ai-report";
+const API_URL = "/api/report";
+const PROMPT_BUDGET = 60000;      // characters of chat sent for the AI report
 const PERSONA = "יוסי";
 const SESSION_GAP = 4 * 3600e3;   // a gap this long starts a new conversation
 const CHASE_GAP = 20 * 60e3;      // sending again after this long with no reply counts as chasing
@@ -199,7 +192,7 @@ const COLORS = ["--a","--b","--c","--d","--e"];
 
 document.getElementById("build").textContent = BUILD;
 document.getElementById("personaName").textContent = PERSONA;
-document.querySelectorAll("#aiCard p").forEach(p => p.innerHTML = p.innerHTML.replaceAll("{{persona}}", PERSONA));
+document.querySelectorAll("#aiCard h2, #aiCard p").forEach(p => p.innerHTML = p.innerHTML.replaceAll("{{persona}}", PERSONA));
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -649,7 +642,8 @@ function render(){
     </div>
     ${st.deleted || st.media ? `<p class="small muted" style="margin-top:10px">${num(st.media)} קבצי מדיה${st.deleted ? ` ו-${num(st.deleted)} הודעות שנמחקו. מעניין מה היה כתוב שם.` : "."}</p>` : ""}`;
 
-  updatePromptInfo();
+  $("aiOut").classList.add("hidden");
+  $("aiBtn").textContent = "✨ לקבל את הדוח המלא";
   drawCard();
 }
 
@@ -657,7 +651,7 @@ function render(){
 
 function buildPrompt(){
   const {parsed, st} = STATE;
-  const budget = +document.querySelector('input[name="size"]:checked').value;
+  const budget = PROMPT_BUDGET;
   const anon = $("anon").checked;
   const letters = "אבגדהוזחטיכלמנסעפצקרשת";
   const alias = new Map(st.people.map((p, i) => [p.name, anon ? `משתתף ${letters[i] || i + 1}` : p.name]));
@@ -688,6 +682,8 @@ function buildPrompt(){
 - אם משהו לא ברור מהטקסט, תגיד שהוא לא ברור. אתה לא קורא מחשבות.
 - אל תאבחן אף אחד פסיכולוגית ואל תדביק תוויות קליניות.
 
+ענה ב-Markdown פשוט: כותרת ## לכל סעיף, רשימות עם -, הדגשות עם **. בלי טבלאות.
+
 מבנה הדוח:
 1. השורה התחתונה, במשפט אחד.
 2. ${duo ? "מי יותר בעניין, ולמה (עם ראיות)." : "התפקידים בקבוצה: מי מחזיק אותה, מי נעלם, מי מצחיק, מי מתווכח."}
@@ -706,22 +702,43 @@ ${statLines}
 ${body}`;
 }
 
-function updatePromptInfo(){
-  if (!STATE) return;
-  const p = buildPrompt();
-  $("promptInfo").textContent = `${num(p.length)} תווים`;
+// Minimal markdown → HTML for the model's answer; everything is escaped first.
+function mdToHtml(md){
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<i>$2</i>");
+  const out = [];
+  let list = null;
+  const close = () => { if (list){ out.push(`</${list}>`); list = null; } };
+  for (const raw of md.split("\n")){
+    const line = raw.trim();
+    let m;
+    if (!line){ close(); continue; }
+    if ((m = /^#{1,6}\s+(.*)$/.exec(line))){ close(); out.push(`<h3>${inline(m[1])}</h3>`); continue; }
+    if ((m = /^[-*•]\s+(.*)$/.exec(line))){ if (list !== "ul"){ close(); out.push("<ul>"); list = "ul"; } out.push(`<li>${inline(m[1])}</li>`); continue; }
+    if ((m = /^\d+[.)]\s+(.*)$/.exec(line))){ if (list !== "ol"){ close(); out.push("<ol>"); list = "ol"; } out.push(`<li>${inline(m[1])}</li>`); continue; }
+    close(); out.push(`<p>${inline(line)}</p>`);
+  }
+  close();
+  return out.join("");
 }
-document.querySelectorAll('input[name="size"], #anon').forEach(el => el.addEventListener("change", updatePromptInfo));
 
-$("copyPrompt").addEventListener("click", async () => {
-  const p = buildPrompt();
-  try { await navigator.clipboard.writeText(p); toast("הועתק. עכשיו פותחים צ'אט ומדביקים."); }
-  catch {
-    const ta = document.createElement("textarea");
-    ta.value = p; document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); toast("הועתק. עכשיו פותחים צ'אט ומדביקים."); }
-    catch { toast("ההעתקה נכשלה. נסו בדפדפן אחר."); }
-    ta.remove();
+$("aiBtn").addEventListener("click", async () => {
+  const btn = $("aiBtn"), out = $("aiOut");
+  btn.disabled = true;
+  btn.textContent = `⏳ ${PERSONA} קורא את השיחה… (עד דקה)`;
+  out.classList.add("hidden");
+  try {
+    const r = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({prompt:buildPrompt()})});
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok || !data.text) throw new Error(data.message || "משהו השתבש. נסו שוב בעוד רגע.");
+    out.innerHTML = mdToHtml(data.text);
+    out.classList.remove("hidden");
+    btn.textContent = "🔄 לכתוב דוח חדש";
+    out.scrollIntoView({behavior:"smooth", block:"start"});
+  } catch (err){
+    toast(err.message === "Failed to fetch" ? "אין חיבור לשרת. בדקו אינטרנט ונסו שוב." : err.message);
+    btn.textContent = "✨ לקבל את הדוח המלא";
+  } finally {
+    btn.disabled = false;
   }
 });
 
