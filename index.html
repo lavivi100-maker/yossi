@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מה יוסי חושב</title>
+<meta name="description" content="מעלים ייצוא של צ'אט מוואטסאפ ומקבלים ניתוח: מי יותר בעניין, מי פותח, מי עונה מהר. הכול רץ בטלפון, שום דבר לא נשלח.">
+<style>
+:root{
+  --bg:#f6f3ee; --card:#ffffff; --ink:#1d1b19; --muted:#6b645c; --line:#e4ddd3;
+  --accent:#0f8a5f; --accent-ink:#ffffff; --a:#0f8a5f; --b:#d9572b; --c:#3b6fd8; --d:#a347c2; --e:#c99a12;
+  --soft:#eef7f2; --warn:#fff4e5; --warn-ink:#7a4a00;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141311; --card:#1f1d1a; --ink:#f1ece4; --muted:#a39a8f; --line:#35312c;
+    --accent:#2bbf86; --accent-ink:#06130d; --a:#2bbf86; --b:#f07a4f; --c:#6f97f0; --d:#c77ee0; --e:#e2b93b;
+    --soft:#17261f; --warn:#2b2214; --warn-ink:#f2c77a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141311; --card:#1f1d1a; --ink:#f1ece4; --muted:#a39a8f; --line:#35312c;
+  --accent:#2bbf86; --accent-ink:#06130d; --a:#2bbf86; --b:#f07a4f; --c:#6f97f0; --d:#c77ee0; --e:#e2b93b;
+  --soft:#17261f; --warn:#2b2214; --warn-ink:#f2c77a;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:clamp(15px,1.1vw + 11px,18px);line-height:1.55;overflow-x:hidden}
+main{max-width:760px;margin:0 auto;padding:16px 16px 48px}
+h1{font-size:clamp(28px,5vw + 10px,48px);line-height:1.1;margin:.4em 0 .2em}
+h2{font-size:clamp(19px,1.5vw + 14px,26px);margin:0 0 .6em}
+h3{font-size:1em;margin:1em 0 .4em}
+p{margin:.4em 0}
+.lead{color:var(--muted);font-size:1.05em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,3vw,26px);margin:16px 0}
+.ltr{direction:ltr;unicode-bidi:isolate}
+bdi{unicode-bidi:isolate}
+.muted{color:var(--muted)}
+.small{font-size:.86em}
+button,.btn{font:inherit;min-height:48px;padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.drop{display:block;border:2px dashed var(--line);border-radius:16px;padding:24px 16px;text-align:center;cursor:pointer;min-height:120px}
+.drop strong{display:block;font-size:1.15em;margin-bottom:4px}
+.drop.over{border-color:var(--accent);background:var(--soft)}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+textarea{width:100%;min-height:120px;font:inherit;font-size:.9em;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px}
+details summary{cursor:pointer;min-height:48px;display:flex;align-items:center;font-weight:600}
+ol.how{padding-inline-start:1.3em;margin:.3em 0}
+ol.how li{margin:.25em 0}
+.err{background:var(--warn);color:var(--warn-ink);border-radius:12px;padding:12px 14px;margin-top:12px}
+.hidden{display:none}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:var(--bg);border-radius:14px;padding:12px}
+.stat b{display:block;font-size:1.5em;line-height:1.2}
+.verdict{list-style:none;padding:0;margin:0}
+.verdict li{padding:12px 0;border-bottom:1px solid var(--line)}
+.verdict li:last-child{border-bottom:0}
+.meter{display:flex;height:44px;border-radius:12px;overflow:hidden;margin:10px 0 4px;font-weight:700;font-size:.95em}
+.meter div{display:flex;align-items:center;justify-content:center;color:#fff;min-width:0;white-space:nowrap;overflow:hidden}
+.bars .bar{margin:8px 0}
+.bars .track{background:var(--bg);border-radius:8px;height:14px;overflow:hidden}
+.bars .fill{height:100%;border-radius:8px}
+.bars .lbl{display:flex;justify-content:space-between;gap:8px;font-size:.92em}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.9em;min-width:520px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}
+th{color:var(--muted);font-weight:600}
+td.n{direction:ltr;unicode-bidi:isolate;text-align:end}
+.hours{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;align-items:end;height:110px;direction:ltr}
+.hours div{background:var(--accent);border-radius:3px 3px 0 0;min-height:2px}
+.hours-axis{display:flex;justify-content:space-between;direction:ltr;font-size:.75em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--bg);border-radius:999px;padding:4px 12px;font-size:.92em}
+.chip i{font-style:normal;color:var(--muted);margin-inline-start:4px}
+.dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;vertical-align:middle;margin-inline-end:6px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.seg input{width:20px;height:20px}
+.ai-links a{flex:1 1 140px}
+canvas{max-width:100%;height:auto;border-radius:14px;display:block;margin:10px auto}
+footer{text-align:center;color:var(--muted);font-size:.8em;margin-top:28px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:9;max-width:90vw}
+@media print{
+  body{background:#fff;color:#000}
+  .card{break-inside:avoid;border-color:#ccc}
+  #start,#aiCard,#shareCard,button,.btn{display:none !important}
+}
+</style>
+</head>
+<body>
+<main>
+
+<noscript>
+  <div class="card err">
+    <strong>הדף נפתח בתצוגה מקדימה שלא מריצה אותו.</strong>
+    <p>פתחו את הקישור בכרום או בספארי (שלוש הנקודות ← "פתח בדפדפן"). הניתוח רץ בתוך הדפדפן ולכן צריך דפדפן אמיתי.</p>
+  </div>
+</noscript>
+
+<header>
+  <h1>מה <span id="personaName">יוסי</span> חושב?</h1>
+  <p class="lead">שולחים לו צ'אט מוואטסאפ, והוא אומר לכם בלי לייפות מי יותר בעניין, מי תמיד פותח, ומי עונה אחרי שלוש שעות.</p>
+  <p class="small muted">🔒 הכול רץ אצלכם בטלפון. הצ'אט לא עולה לשום שרת.</p>
+</header>
+
+<section class="card" id="start">
+  <h2>1. מביאים את הצ'אט</h2>
+  <label class="drop" id="drop" for="file">
+    <strong>📂 לבחור קובץ ייצוא</strong>
+    <span class="muted small">קובץ ‎.txt או ‎.zip שוואטסאפ יצר</span>
+  </label>
+  <input type="file" id="file" accept=".txt,.zip,text/plain,application/zip">
+  <div class="row" style="margin-top:12px">
+    <button id="demoBtn" type="button">🎲 לנסות על צ'אט לדוגמה</button>
+  </div>
+  <div id="error" class="err hidden"></div>
+
+  <details style="margin-top:10px">
+    <summary>איך מייצאים צ'אט מוואטסאפ?</summary>
+    <h3>אנדרואיד</h3>
+    <ol class="how">
+      <li>פותחים את הצ'אט ← שלוש הנקודות למעלה ← עוד ← ייצוא צ'אט.</li>
+      <li>בוחרים <b>ללא מדיה</b>.</li>
+      <li>שומרים לקבצים (או שולחים לעצמכם), וחוזרים לכאן לבחור אותו.</li>
+    </ol>
+    <h3>אייפון</h3>
+    <ol class="how">
+      <li>פותחים את הצ'אט ← לוחצים על השם למעלה ← גוללים למטה ← ייצוא צ'אט.</li>
+      <li>בוחרים <b>ללא מדיה</b> ← "שמור בקבצים".</li>
+      <li>חוזרים לכאן ובוחרים את קובץ ה-zip. אין צורך לפתוח אותו.</li>
+    </ol>
+  </details>
+  <details>
+    <summary>או להדביק את הטקסט ישירות</summary>
+    <textarea id="paste" placeholder="מדביקים כאן את תוכן הקובץ…"></textarea>
+    <div class="row" style="margin-top:8px"><button id="pasteBtn" type="button">לנתח את הטקסט</button></div>
+  </details>
+</section>
+
+<div id="results" class="hidden">
+  <section class="card" id="overview"></section>
+  <section class="card" id="verdictCard"></section>
+  <section class="card" id="peopleCard"></section>
+  <section class="card" id="timeCard"></section>
+  <section class="card" id="wordsCard"></section>
+  <section class="card" id="recordsCard"></section>
+
+  <section class="card" id="aiCard">
+    <h2>🧠 רוצים ניתוח עומק? בחינם.</h2>
+    <p>{{persona}} מכין לכם פרומט עם הסטטיסטיקה וקטע מהשיחה. מדביקים אותו ב-ChatGPT, ב-Gemini או ב-Claude, בגרסה החינמית, ומקבלים דוח מלא שכתוב כמו ש-{{persona}} היה כותב.</p>
+    <h3>כמה מהשיחה לשלוח?</h3>
+    <div class="seg" id="sizeSeg">
+      <label><input type="radio" name="size" value="12000"> קצר</label>
+      <label><input type="radio" name="size" value="35000" checked> בינוני</label>
+      <label><input type="radio" name="size" value="90000"> ארוך</label>
+    </div>
+    <h3>פרטיות</h3>
+    <div class="seg">
+      <label><input type="checkbox" id="anon"> להחליף שמות בכינויים</label>
+    </div>
+    <p class="small muted">שימו לב: מה שמדביקים בצ'אט של בינה מלאכותית נשלח לחברה שמפעילה אותו. כאן בדף שום דבר לא נשלח.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn-primary" id="copyPrompt" type="button">📋 להעתיק את הפרומט</button>
+      <span class="small muted" id="promptInfo"></span>
+    </div>
+    <div class="row ai-links" style="margin-top:10px">
+      <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a>
+      <a class="btn" href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a>
+      <a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a>
+    </div>
+  </section>
+
+  <section class="card" id="shareCard">
+    <h2>📸 כרטיס לשיתוף</h2>
+    <p class="muted small">תמונה עם השורה התחתונה, בלי תוכן השיחה, לסטטוס או לחברים.</p>
+    <canvas id="cardCanvas" width="1080" height="1350"></canvas>
+    <div class="row">
+      <button class="btn-primary" id="shareImg" type="button">לשתף / לשמור תמונה</button>
+      <button id="again" type="button">צ'אט אחר</button>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div>זה ניתוח של דפוסי כתיבה, לא קריאת מחשבות. אנשים הם יותר מהצ'אט שלהם.</div>
+  <div class="ltr" id="build" style="margin-top:6px"></div>
+</footer>
+</main>
+
+<script>
+"use strict";
+const BUILD = "2026-10-24 20:44 v1 first";
+const PERSONA = "יוסי";
+const SESSION_GAP = 4 * 3600e3;   // a gap this long starts a new conversation
+const CHASE_GAP = 20 * 60e3;      // sending again after this long with no reply counts as chasing
+const COLORS = ["--a","--b","--c","--d","--e"];
+
+document.getElementById("build").textContent = BUILD;
+document.getElementById("personaName").textContent = PERSONA;
+document.querySelectorAll("#aiCard p").forEach(p => p.innerHTML = p.innerHTML.replaceAll("{{persona}}", PERSONA));
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const col = i => `var(${COLORS[i % COLORS.length]})`;
+const colHex = i => getComputedStyle(document.documentElement).getPropertyValue(COLORS[i % COLORS.length]).trim();
+const pct = x => Math.round(x * 100);
+const num = n => n.toLocaleString("he-IL");
+const nm = s => `<bdi>${esc(s)}</bdi>`;
+
+function dur(ms){
+  if (ms == null || !isFinite(ms)) return "—";
+  const m = ms / 60e3;
+  if (m < 1) return "פחות מדקה";
+  if (m < 60) return Math.round(m) + " דק'";
+  const h = m / 60;
+  if (h < 48) return (h < 10 ? h.toFixed(1).replace(/\.0$/,"") : Math.round(h)) + " שע'";
+  return Math.round(h / 24) + " ימים";
+}
+const fmtDate = d => d.toLocaleDateString("he-IL", {day:"numeric", month:"short", year:"numeric"});
+
+function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+/* ---------- reading files ---------- */
+
+async function readZip(buf){
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 70000); i--){
+    if (dv.getUint32(i, true) === 0x06054b50){ eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error("קובץ ה-zip לא נקרא. נסו לפתוח אותו ולבחור את קובץ ה-txt שבתוכו.");
+  const count = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+  const entries = [];
+  for (let k = 0; k < count; k++){
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true);
+    const csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+    const off = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nlen));
+    entries.push({name, method, csize, off});
+    p += 46 + nlen + xlen + clen;
+  }
+  const txts = entries.filter(e => /\.txt$/i.test(e.name) && !/__MACOSX/.test(e.name));
+  if (!txts.length) throw new Error("בתוך ה-zip אין קובץ טקסט של צ'אט.");
+  const e = txts.find(e => /chat/i.test(e.name)) || txts.sort((a, b) => b.csize - a.csize)[0];
+  const lnlen = dv.getUint16(e.off + 26, true), lxlen = dv.getUint16(e.off + 28, true);
+  const start = e.off + 30 + lnlen + lxlen;
+  const data = u8.subarray(start, start + e.csize);
+  if (e.method === 0) return new TextDecoder().decode(data);
+  if (e.method !== 8) throw new Error("פורמט דחיסה לא מוכר. פתחו את ה-zip ובחרו את קובץ ה-txt.");
+  if (typeof DecompressionStream === "undefined") throw new Error("הדפדפן הזה ישן מדי לפתוח zip. פתחו את ה-zip ובחרו את קובץ ה-txt שבתוכו.");
+  const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return await new Response(stream).text();
+}
+
+async function handleFile(file){
+  showError("");
+  try {
+    const buf = await file.arrayBuffer();
+    const u8 = new Uint8Array(buf);
+    const isZip = u8[0] === 0x50 && u8[1] === 0x4b;
+    const text = isZip ? await readZip(buf) : new TextDecoder().decode(buf);
+    const title = file.name.replace(/\.(txt|zip)$/i, "").replace(/^WhatsApp Chat( with| - )?\s*/i, "").replace(/^צ'?אט WhatsApp עם\s*/,"");
+    run(text, title);
+  } catch (err){
+    showError(err.message || String(err));
+  }
+}
+
+function showError(msg){
+  const el = $("error");
+  el.textContent = msg;
+  el.classList.toggle("hidden", !msg);
+}
+
+/* ---------- parsing ---------- */
+
+const INVIS = /[‎‏‪-‮⁦-⁩﻿]/g;
+const RX_IOS = /^\[(\d{1,4})[.\/-](\d{1,2})[.\/-](\d{2,4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp]\.?\s?[Mm]\.?)?\]\s?(.*)$/;
+const RX_AND = /^(\d{1,4})[.\/-](\d{1,2})[.\/-](\d{2,4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp]\.?\s?[Mm]\.?)?\s*[-–]\s(.*)$/;
+const RX_MEDIA = /^<[^>]*(omitted|הושמט|לא נכלל|נכללה)[^>]*>$|^(image|video|audio|sticker|GIF|document|Contact card) omitted$|^(תמונה|סרטון|שמע|קובץ שמע|מדבקה|GIF|מסמך|כרטיס איש קשר) (הושמט|הושמטה)$|\((file attached|קובץ מצורף)\)$/i;
+const RX_DELETED = /^(This message was deleted|You deleted this message|ההודעה נמחקה|מחקת את ההודעה הזו|ההודעה הזו נמחקה)\.?$/i;
+const RX_EDITED = /\s*<(This message was edited|ההודעה נערכה|הודעה זו נערכה)>\s*$/i;
+const RX_SYSTEM = /end-to-end|מוצפנות מקצה|created group|יצר(ה)? את הקבוצה|added|הוסיפ?(ה)?|left$|יצא(ה)?$|changed (the|this|their)|שינ(ה|תה)|joined|הצטרפ|security code|קוד האבטחה|Missed (voice|video) call|שיחה (קולית|וידאו) שלא נענתה|disappearing messages|הודעות זמניות|pinned a message|הצמיד/i;
+
+function parseChat(text){
+  text = text.replace(/\r\n?/g, "\n");
+  const raw = [];
+  for (const line of text.split("\n")){
+    const clean = line.replace(/[  ]/g, " ");
+    const stripped = clean.replace(INVIS, "");
+    const m = RX_IOS.exec(stripped) || RX_AND.exec(stripped);
+    if (m){
+      // iOS marks system lines with U+200E after the colon; remember it before stripping
+      raw.push({aRaw:m[1], a:+m[1], b:+m[2], c:+m[3], h:+m[4], mi:+m[5], s:+(m[6] || 0), ap:m[7], rest:m[8], sysMark:/:\s‎/.test(clean) || /^‎/.test(m[8])});
+    } else if (raw.length){
+      raw[raw.length - 1].rest += "\n" + line.replace(INVIS, "");
+    }
+  }
+  if (!raw.length) return null;
+
+  let order = "dmy";
+  if (raw.some(r => r.aRaw.length === 4)) order = "ymd";
+  else if (raw.some(r => r.a > 12)) order = "dmy";
+  else if (raw.some(r => r.b > 12)) order = "mdy";
+
+  const msgs = [];
+  let media = 0, deleted = 0;
+  for (const r of raw){
+    let d, mo, y;
+    if (order === "ymd"){ y = r.a; mo = r.b; d = r.c; }
+    else if (order === "mdy"){ mo = r.a; d = r.b; y = r.c; }
+    else { d = r.a; mo = r.b; y = r.c; }
+    if (y < 100) y += 2000;
+    let h = r.h;
+    if (r.ap){ const pm = /p/i.test(r.ap); if (pm && h < 12) h += 12; if (!pm && h === 12) h = 0; }
+    const t = new Date(y, mo - 1, d, h, r.mi, r.s);
+    if (isNaN(t)) continue;
+
+    const i = r.rest.indexOf(": ");
+    if (i <= 0 || i > 60) continue;              // no "Name: " → system line
+    let sender = r.rest.slice(0, i).replace(/^~\s*/, "").trim();
+    let body = r.rest.slice(i + 2).replace(INVIS, "").replace(RX_EDITED, "").trim();
+    if (!sender) continue;
+    if (RX_MEDIA.test(body)){ msgs.push({t, sender, text:"", media:true}); media++; continue; }
+    if (RX_DELETED.test(body)){ deleted++; continue; }
+    if (r.sysMark && RX_SYSTEM.test(body) && body.length < 140) continue;
+    if (/end-to-end|מוצפנות מקצה לקצה/.test(body) && body.length < 200) continue;
+    msgs.push({t, sender, text:body, media:false});
+  }
+  msgs.sort((a, b) => a.t - b.t);
+  return {msgs, media, deleted};
+}
+
+/* ---------- analysis ---------- */
+
+const STOP = new Set(("את של על זה לא כן אני אתה הוא היא אנחנו הם הן מה מי איך למה יש אין גם רק עם אבל או אם כי כל היה הייתה היו זאת הזה הזאת זו לי לך לו לה לנו לכם להם שלי שלך שלו שלה שלנו אז עוד כבר פה שם אחד אחת טוב ממש סתם נו אוקי אוק עכשיו היום מחר אתמול אותו אותה אותך אותי בסדר יותר הכי מאוד איזה כמו אחרי לפני עד אצל בין וזה שזה אה אהה אהם יאללה כאילו אולי צריך רוצה יודע יודעת חושב חושבת בא באה נראה שיש שאני שאתה שהוא שהיא אבל הייתי היית תודה ואני ואז זהו עדיין בכלל פשוט לגמרי מתי איפה כמה הנה דרך " +
+  "the a an and or but is are was were be to of in on at for with it this that i you he she we they me my your so do did not no yes ok okay just like what when where how why have has had im its it's i'm dont don't can will would get got").split(/\s+/));
+const RX_LAUGH = /(ח{3,}|חח|haha|hehe|lol|lmao|😂|🤣|😆)/i;
+const RX_LOVE = /(❤|♥|😍|🥰|😘|💕|💖|💗|😻|אוהב|אוהבת|מתגעגע|מתגעגעת|love you|miss you)/i;
+const seg = (typeof Intl !== "undefined" && Intl.Segmenter) ? new Intl.Segmenter(undefined, {granularity:"grapheme"}) : null;
+const RX_PICTO = /\p{Extended_Pictographic}/u;
+function emojis(text){
+  const out = [];
+  if (seg){ for (const {segment} of seg.segment(text)) if (RX_PICTO.test(segment)) out.push(segment.replace(/[\u{1F3FB}-\u{1F3FF}️]/gu, "")); }
+  else { const m = text.match(/\p{Extended_Pictographic}/gu); if (m) out.push(...m); }
+  return out;
+}
+const median = arr => { if (!arr.length) return null; const s = [...arr].sort((a, b) => a - b); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const dayKey = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+
+function analyze(parsed){
+  const {msgs} = parsed;
+  const P = new Map();
+  const get = s => {
+    if (!P.has(s)) P.set(s, {name:s, msgs:0, words:0, chars:0, media:0, init:0, ends:0, replies:[], questions:0, laughs:0, love:0, chase:0, night:0, emoji:new Map(), vocab:new Map(), longest:""});
+    return P.get(s);
+  };
+  const hours = new Array(24).fill(0), week = new Array(7).fill(0);
+  const days = new Map(), months = new Map();
+  let longestGap = {ms:0, at:null};
+
+  for (let k = 0; k < msgs.length; k++){
+    const m = msgs[k], p = get(m.sender), prev = msgs[k - 1];
+    p.msgs++;
+    hours[m.t.getHours()]++; week[m.t.getDay()]++;
+    const dk = dayKey(m.t); days.set(dk, (days.get(dk) || 0) + 1);
+    const mk = dk.slice(0, 7); months.set(mk, (months.get(mk) || 0) + 1);
+    if (m.t.getHours() < 5) p.night++;
+
+    const gap = prev ? m.t - prev.t : Infinity;
+    if (!prev || gap >= SESSION_GAP){
+      p.init++;
+      if (prev) get(prev.sender).ends++;
+    } else if (prev.sender !== m.sender){
+      p.replies.push(gap);
+    } else if (gap >= CHASE_GAP){
+      p.chase++;
+    }
+    if (prev && gap > longestGap.ms && gap !== Infinity) longestGap = {ms:gap, at:prev.t, back:m.sender};
+
+    if (m.media){ p.media++; continue; }
+    const tx = m.text;
+    const words = tx.toLowerCase().split(/[^\p{L}\p{N}'"]+/u).filter(Boolean);
+    p.words += words.length; p.chars += tx.length;
+    if (tx.length > p.longest.length) p.longest = tx;
+    if (tx.includes("?")) p.questions++;
+    if (RX_LAUGH.test(tx)) p.laughs++;
+    if (RX_LOVE.test(tx)) p.love++;
+    for (const e of emojis(tx)) p.emoji.set(e, (p.emoji.get(e) || 0) + 1);
+    for (let w of words){
+      w = w.replace(/^['"]+|['"]+$/g, "");
+      if (w.length < 2 || STOP.has(w) || /^\d+$/.test(w) || /^ח+$/.test(w) || /^(ha)+h?$/.test(w)) continue;
+      p.vocab.set(w, (p.vocab.get(w) || 0) + 1);
+    }
+  }
+  if (msgs.length) get(msgs[msgs.length - 1].sender).ends++;
+
+  const people = [...P.values()].sort((a, b) => b.msgs - a.msgs);
+  for (const p of people){
+    p.medReply = median(p.replies);
+    p.avgWords = p.msgs - p.media ? p.words / (p.msgs - p.media) : 0;
+  }
+
+  // streak and busiest day
+  const dkeys = [...days.keys()].sort();
+  let best = 0, cur = 0, prevD = null, streakEnd = null;
+  for (const k of dkeys){
+    const d = new Date(k + "T12:00:00");
+    cur = prevD && (d - prevD) < 1.5 * 864e5 ? cur + 1 : 1;
+    if (cur > best){ best = cur; streakEnd = d; }
+    prevD = d;
+  }
+  let busiest = null;
+  for (const [k, v] of days) if (!busiest || v > busiest.v) busiest = {k, v};
+
+  // trend: messages per day in the last quarter of the timeline vs the rest
+  let trend = null;
+  if (msgs.length > 40){
+    const t0 = msgs[0].t.getTime(), t1 = msgs[msgs.length - 1].t.getTime(), span = t1 - t0;
+    if (span > 21 * 864e5){
+      const cut = t1 - span / 4;
+      const late = msgs.filter(m => m.t >= cut).length / (span / 4);
+      const early = msgs.filter(m => m.t < cut).length / (span * 3 / 4);
+      if (early > 0) trend = late / early - 1;
+    }
+  }
+
+  const allEmoji = new Map();
+  for (const p of people) for (const [e, c] of p.emoji) allEmoji.set(e, (allEmoji.get(e) || 0) + c);
+
+  return {
+    people, total:msgs.length, first:msgs[0]?.t, last:msgs[msgs.length - 1]?.t,
+    activeDays:days.size, hours, week, months, streak:best, streakEnd, busiest, longestGap,
+    trend, allEmoji, media:parsed.media, deleted:parsed.deleted
+  };
+}
+
+/* ---------- interest score & verdict ---------- */
+
+const share = (x, y) => (x + y) ? x / (x + y) : .5;
+function interest(A, B){
+  const speedA = (A.medReply != null && B.medReply != null) ? share(B.medReply, A.medReply) : .5;
+  const s = .20 * share(A.msgs, B.msgs) + .25 * share(A.init, B.init) + .20 * speedA +
+            .15 * share(A.questions, B.questions) + .10 * share(A.chase, B.chase) + .10 * share(A.words, B.words);
+  return s;
+}
+
+function verdict2(st){
+  const [A, B] = st.people;
+  const sA = interest(A, B);
+  const lead = sA >= .5 ? A : B, other = lead === A ? B : A;
+  const gap = Math.abs(sA - .5) * 2;
+  const lines = [];
+  if (gap < .08) lines.push(`${nm(A.name)} ו${nm(B.name)} באותו גובה בדיוק. משעמם לנתח, בריא לחיות.`);
+  else if (gap < .25) lines.push(`${nm(lead.name)} קצת יותר בעניין. לא דרמה, אבל זה ניכר.`);
+  else lines.push(`בואו נגיד את זה בפשטות: ${nm(lead.name)} רוצה את זה הרבה יותר מ${nm(other.name)}.`);
+
+  const tot = A.init + B.init;
+  if (tot >= 4){
+    const ip = A.init / tot, opener = ip >= .5 ? A : B, op = Math.max(ip, 1 - ip);
+    if (op >= .68) lines.push(`${nm(opener.name)} פותח/ת ${pct(op)}% מהשיחות. ${nm(opener === A ? B.name : A.name)} כנראה מחכה שהטלפון יתחיל לבד.`);
+    else if (op <= .56) lines.push(`פתיחת שיחות מתחלקת יפה, ${pct(A.init / tot)}% מול ${pct(B.init / tot)}%. אף אחד פה לא סוחב לבד.`);
+  }
+  if (A.medReply != null && B.medReply != null){
+    const slow = A.medReply > B.medReply ? A : B, fast = slow === A ? B : A;
+    if (slow.medReply > 10 * 60e3 && slow.medReply > 3 * fast.medReply)
+      lines.push(`${nm(fast.name)} עונה תוך ${dur(fast.medReply)}, ו${nm(slow.name)} תוך ${dur(slow.medReply)}. מישהו פה משחק אותה עסוק/ה.`);
+    else if (Math.max(A.medReply, B.medReply) < 4 * 60e3)
+      lines.push(`שניכם עונים תוך דקות. או שאתם בעניין, או שאין לכם עבודה.`);
+  }
+  const ch = A.chase >= B.chase ? A : B, chO = ch === A ? B : A;
+  if (ch.chase >= 5 && ch.chase >= 2 * Math.max(1, chO.chase))
+    lines.push(`${nm(ch.name)} שלח/ה עוד הודעה בלי לקבל תשובה ${num(ch.chase)} פעמים. אנחנו רואים אותך.`);
+  if (A.avgWords && B.avgWords){
+    const lo = A.avgWords < B.avgWords ? A : B, hi = lo === A ? B : A;
+    if (hi.avgWords > 1.8 * lo.avgWords && hi.avgWords > 6)
+      lines.push(`${nm(hi.name)} כותב/ת מגילות, בממוצע ${Math.round(hi.avgWords)} מילים להודעה. ${nm(lo.name)} מסתפק/ת ב-${Math.max(1, Math.round(lo.avgWords))}.`);
+  }
+  const qt = A.questions + B.questions;
+  if (qt >= 10){
+    const q = A.questions / qt, asker = q >= .5 ? A : B, qp = Math.max(q, 1 - q);
+    if (qp >= .66) lines.push(`${pct(qp)}% מהשאלות בשיחה באות מ${nm(asker.name)}. ${nm(asker === A ? B.name : A.name)}, לשאול בחזרה זה ממש בסדר.`);
+  }
+  const lt = A.laughs + B.laughs;
+  if (lt >= 10){
+    const l = A.laughs >= B.laughs ? A : B;
+    lines.push(`${nm(l.name)} צחק/ה ב-${num(l.laughs)} הודעות. צחוק אמיתי או צחוק מנומס? את זה אפילו ${PERSONA} לא יודע.`);
+  }
+  const lv = A.love + B.love;
+  if (lv >= 8){
+    const l = A.love >= B.love ? A : B, lp = l.love / lv;
+    if (lp >= .7) lines.push(`${pct(lp)}% מהלבבות וה"מתגעגע/ת" באים מ${nm(l.name)}. רק אומר.`);
+    else lines.push(`הלבבות מתחלקים די שווה. חמוד, אפילו ל${PERSONA}.`);
+  }
+  if (st.trend != null){
+    if (st.trend <= -.35) lines.push(`בתקופה האחרונה כמות ההודעות ירדה ב-${pct(-st.trend)}%. או שנפגשים יותר, או שמשהו מתקרר.`);
+    else if (st.trend >= .4) lines.push(`בתקופה האחרונה כמות ההודעות עלתה ב-${pct(st.trend)}%. משהו פה מתחמם.`);
+  }
+  const nt = A.night + B.night;
+  if (nt >= 15){
+    const n = A.night >= B.night ? A : B;
+    lines.push(`${num(nt)} הודעות נשלחו בין חצות לחמש בבוקר, רובן מ${nm(n.name)}. בשעות האלה לא כותבים סתם.`);
+  }
+  return {lines, score:sA};
+}
+
+function verdictGroup(st){
+  const ps = st.people.filter(p => p.msgs >= 3);
+  const lines = [];
+  const top = ps[0], low = ps[ps.length - 1];
+  lines.push(`🚂 <b>המנוע של הקבוצה:</b> ${nm(top.name)}, עם ${pct(top.msgs / st.total)}% מכל ההודעות. בלעדיו/ה זו קבוצה של מדבקות.`);
+  if (ps.length > 2) lines.push(`👻 <b>רוח רפאים:</b> ${nm(low.name)}, עם ${num(low.msgs)} הודעות בסך הכול. קורא/ת הכול, אומר/ת כלום.`);
+  const opener = [...ps].sort((a, b) => b.init - a.init)[0];
+  if (opener.init >= 3) lines.push(`📣 <b>מעיר/ה את הקבוצה:</b> ${nm(opener.name)} פתח/ה ${num(opener.init)} שיחות אחרי שקט.`);
+  const fast = ps.filter(p => p.replies.length >= 5).sort((a, b) => a.medReply - b.medReply)[0];
+  if (fast) lines.push(`⚡ <b>הכי מהיר/ה:</b> ${nm(fast.name)}, עונה בדרך כלל תוך ${dur(fast.medReply)}.`);
+  const writer = [...ps].sort((a, b) => b.avgWords - a.avgWords)[0];
+  if (writer.avgWords > 8) lines.push(`📜 <b>כותב/ת המגילות:</b> ${nm(writer.name)}, בממוצע ${Math.round(writer.avgWords)} מילים להודעה.`);
+  const owl = [...ps].sort((a, b) => b.night / b.msgs - a.night / a.msgs)[0];
+  if (owl.night >= 5) lines.push(`🦉 <b>הינשוף:</b> ${nm(owl.name)}, ${num(owl.night)} הודעות בין חצות לחמש.`);
+  const em = [...ps].map(p => ({p, n:[...p.emoji.values()].reduce((a, b) => a + b, 0)})).sort((a, b) => b.n - a.n)[0];
+  if (em && em.n >= 10) lines.push(`🎭 <b>מלך/ת האימוג'י:</b> ${nm(em.p.name)}, עם ${num(em.n)} אימוג'ים.`);
+  const laugh = [...ps].sort((a, b) => b.laughs - a.laughs)[0];
+  if (laugh.laughs >= 5) lines.push(`😂 <b>הקהל הכי טוב:</b> ${nm(laugh.name)}, צחק/ה ב-${num(laugh.laughs)} הודעות.`);
+  return {lines};
+}
+
+/* ---------- rendering ---------- */
+
+let STATE = null;
+
+function run(text, title){
+  const parsed = parseChat(text);
+  if (!parsed || parsed.msgs.length < 5){
+    showError("לא הצלחתי לזהות פה צ'אט של וואטסאפ. ודאו שבחרתם את הקובץ שוואטסאפ יצר בייצוא (txt או zip).");
+    return;
+  }
+  const st = analyze(parsed);
+  if (st.people.length < 2){ showError("מצאתי רק משתתף אחד בשיחה. צריך לפחות שניים כדי שיהיה מה לנתח."); return; }
+  STATE = {parsed, st, title: title || st.people.slice(0, 2).map(p => p.name).join(" ו")};
+  render();
+  $("start").classList.add("hidden");
+  $("results").classList.remove("hidden");
+  window.scrollTo({top:0});
+}
+
+function render(){
+  const {st, title} = STATE;
+  const duo = st.people.length === 2;
+  const days = Math.max(1, Math.round((st.last - st.first) / 864e5));
+
+  $("overview").innerHTML = `
+    <h2>💬 ${esc(title)}</h2>
+    <p class="muted small">${fmtDate(st.first)} – ${fmtDate(st.last)}</p>
+    <div class="stats">
+      <div class="stat"><b class="ltr">${num(st.total)}</b>הודעות</div>
+      <div class="stat"><b class="ltr">${num(st.people.length)}</b>משתתפים</div>
+      <div class="stat"><b class="ltr">${num(days)}</b>ימים</div>
+      <div class="stat"><b class="ltr">${num(Math.round(st.total / Math.max(1, st.activeDays)))}</b>הודעות ביום פעיל</div>
+    </div>`;
+
+  let vHtml = `<h2>🎤 ${PERSONA} אומר</h2>`;
+  if (duo){
+    const v = verdict2(st), [A, B] = st.people;
+    const a = pct(v.score), b = 100 - a;
+    vHtml += `<p class="small muted">מד ההשקעה: מי פותח, מי עונה מהר, מי שואל, מי רודף.</p>
+      <div class="meter"><div style="width:${a}%;background:${col(0)}">${a >= 18 ? a + "%" : ""}</div><div style="width:${b}%;background:${col(1)}">${b >= 18 ? b + "%" : ""}</div></div>
+      <div class="row small" style="justify-content:space-between"><span><span class="dot" style="background:${col(0)}"></span>${nm(A.name)}</span><span><span class="dot" style="background:${col(1)}"></span>${nm(B.name)}</span></div>
+      <ul class="verdict">${v.lines.map(l => `<li>${l}</li>`).join("")}</ul>`;
+    STATE.headline = v.lines[0].replace(/<[^>]+>/g, "");
+    STATE.score = v.score;
+  } else {
+    const v = verdictGroup(st);
+    vHtml += `<ul class="verdict">${v.lines.map(l => `<li>${l}</li>`).join("")}</ul>`;
+    STATE.headline = v.lines[0].replace(/<[^>]+>/g, "");
+  }
+  $("verdictCard").innerHTML = vHtml;
+
+  const shown = st.people.slice(0, 12);
+  const maxMsgs = shown[0].msgs;
+  $("peopleCard").innerHTML = `
+    <h2>👥 מי כמה</h2>
+    <div class="bars">${shown.map((p, i) => `
+      <div class="bar"><div class="lbl"><span>${nm(p.name)}</span><span class="ltr">${num(p.msgs)} · ${pct(p.msgs / st.total)}%</span></div>
+      <div class="track"><div class="fill" style="width:${(p.msgs / maxMsgs * 100).toFixed(1)}%;background:${col(i)}"></div></div></div>`).join("")}
+    </div>
+    <h3>הפירוט</h3>
+    <div class="scroll"><table>
+      <thead><tr><th>מי</th><th>הודעות</th><th>מילים להודעה</th><th>פתח/ה שיחות</th><th>זמן תגובה רגיל</th><th>שאלות</th><th>צחוקים</th><th>עוד הודעה בלי תשובה</th><th>מדיה</th></tr></thead>
+      <tbody>${shown.map(p => `<tr><td>${nm(p.name)}</td><td class="n">${num(p.msgs)}</td><td class="n">${p.avgWords.toFixed(1)}</td><td class="n">${num(p.init)}</td><td>${dur(p.medReply)}</td><td class="n">${num(p.questions)}</td><td class="n">${num(p.laughs)}</td><td class="n">${num(p.chase)}</td><td class="n">${num(p.media)}</td></tr>`).join("")}</tbody>
+    </table></div>
+    ${st.people.length > 12 ? `<p class="small muted">ועוד ${st.people.length - 12} משתתפים.</p>` : ""}`;
+
+  const hmax = Math.max(...st.hours, 1);
+  const peakH = st.hours.indexOf(Math.max(...st.hours));
+  const wnames = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+  const wmax = Math.max(...st.week, 1);
+  const mk = [...st.months.keys()].sort();
+  const allMonths = [];
+  if (mk.length){
+    let [y, m] = mk[0].split("-").map(Number);
+    const [ly, lm] = mk[mk.length - 1].split("-").map(Number);
+    while (y < ly || (y === ly && m <= lm)){ allMonths.push(`${y}-${String(m).padStart(2, "0")}`); m++; if (m > 12){ m = 1; y++; } }
+  }
+  const mmax = Math.max(...allMonths.map(k => st.months.get(k) || 0), 1);
+  const bw = 100 / Math.max(1, allMonths.length);
+  const svg = `<svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%;height:120px;display:block;direction:ltr" role="img" aria-label="הודעות לפי חודש">
+      ${allMonths.map((k, i) => { const v = st.months.get(k) || 0, h = v / mmax * 38; return `<rect x="${(i * bw + bw * .1).toFixed(2)}" y="${(40 - h).toFixed(2)}" width="${(bw * .8).toFixed(2)}" height="${h.toFixed(2)}" rx=".6" fill="var(--accent)"><title>${k}: ${v}</title></rect>`; }).join("")}
+    </svg>`;
+  $("timeCard").innerHTML = `
+    <h2>🕐 מתי מדברים</h2>
+    <p>השעה הכי חמה: <b class="ltr">${String(peakH).padStart(2, "0")}:00</b></p>
+    <div class="hours" aria-label="הודעות לפי שעה">${st.hours.map(v => `<div style="height:${Math.max(2, v / hmax * 100)}%" title="${v}"></div>`).join("")}</div>
+    <div class="hours-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+    <h3>לפי ימים בשבוע</h3>
+    <div class="bars">${st.week.map((v, i) => `<div class="bar"><div class="lbl"><span>${wnames[i]}</span><span class="ltr">${num(v)}</span></div><div class="track"><div class="fill" style="width:${(v / wmax * 100).toFixed(1)}%;background:var(--accent)"></div></div></div>`).join("")}</div>
+    ${allMonths.length > 1 ? `<h3>לאורך הזמן</h3>${svg}<div class="hours-axis"><span>${allMonths[0]}</span><span>${allMonths[allMonths.length - 1]}</span></div>` : ""}`;
+
+  const topN = (map, n) => [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, n);
+  const emo = topN(st.allEmoji, 12);
+  $("wordsCard").innerHTML = `
+    <h2>🔤 המילים של כל אחד</h2>
+    ${shown.slice(0, duo ? 2 : 6).map((p, i) => {
+      const w = topN(p.vocab, 10);
+      return `<h3><span class="dot" style="background:${col(i)}"></span>${nm(p.name)}</h3>
+        <div class="chips">${w.length ? w.map(([k, c]) => `<span class="chip">${esc(k)}<i class="ltr">${c}</i></span>`).join("") : '<span class="muted small">כמעט לא כותב/ת מילים</span>'}</div>`;
+    }).join("")}
+    ${emo.length ? `<h3>האימוג'ים של השיחה</h3><div class="chips">${emo.map(([k, c]) => `<span class="chip">${k}<i class="ltr">${c}</i></span>`).join("")}</div>` : ""}`;
+
+  const lg = st.longestGap;
+  const longest = [...st.people].sort((a, b) => b.longest.length - a.longest.length)[0];
+  $("recordsCard").innerHTML = `
+    <h2>🏆 שיאים</h2>
+    <div class="stats">
+      <div class="stat"><b class="ltr">${num(st.streak)}</b>ימים ברצף בלי לוותר אף יום</div>
+      <div class="stat"><b class="ltr">${st.busiest ? num(st.busiest.v) : 0}</b>הודעות ביום הכי עמוס${st.busiest ? ` (${fmtDate(new Date(st.busiest.k + "T12:00:00"))})` : ""}</div>
+      <div class="stat"><b>${dur(lg.ms)}</b>השקט הכי ארוך${lg.back ? `. מי ששבר אותו: ${nm(lg.back)}` : ""}</div>
+      <div class="stat"><b class="ltr">${num(longest.longest.length)}</b>תווים בהודעה הכי ארוכה, של ${nm(longest.name)}</div>
+    </div>
+    ${st.deleted || st.media ? `<p class="small muted" style="margin-top:10px">${num(st.media)} קבצי מדיה${st.deleted ? ` ו-${num(st.deleted)} הודעות שנמחקו. מעניין מה היה כתוב שם.` : "."}</p>` : ""}`;
+
+  updatePromptInfo();
+  drawCard();
+}
+
+/* ---------- AI prompt ---------- */
+
+function buildPrompt(){
+  const {parsed, st} = STATE;
+  const budget = +document.querySelector('input[name="size"]:checked').value;
+  const anon = $("anon").checked;
+  const letters = "אבגדהוזחטיכלמנסעפצקרשת";
+  const alias = new Map(st.people.map((p, i) => [p.name, anon ? `משתתף ${letters[i] || i + 1}` : p.name]));
+  const fmt = m => {
+    const d = m.t;
+    return `${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} ${alias.get(m.sender)}: ${m.media ? "[מדיה]" : m.text.replace(/\n+/g, " / ")}`;
+  };
+  const lines = parsed.msgs.map(fmt);
+  let total = 0;
+  for (const l of lines) total += l.length + 1;
+  let body, note;
+  if (total <= budget){ body = lines.join("\n"); note = "השיחה המלאה"; }
+  else {
+    const head = [], tail = [];
+    let used = 0;
+    for (const l of lines){ if (used + l.length > budget * .25) break; head.push(l); used += l.length + 1; }
+    for (let i = lines.length - 1; i >= head.length; i--){ if (used + lines[i].length > budget) break; tail.unshift(lines[i]); used += lines[i].length + 1; }
+    body = head.join("\n") + "\n\n[...דילגתי על חלק מהאמצע...]\n\n" + tail.join("\n");
+    note = `קטע מתוך השיחה: ${head.length} ההודעות הראשונות ו-${tail.length} האחרונות, מתוך ${lines.length}`;
+  }
+  const statLines = st.people.slice(0, 12).map(p =>
+    `- ${alias.get(p.name)}: ${p.msgs} הודעות (${pct(p.msgs / st.total)}%), ${p.avgWords.toFixed(1)} מילים להודעה, פתח/ה ${p.init} שיחות, זמן תגובה חציוני ${dur(p.medReply)}, ${p.questions} שאלות, ${p.laughs} צחוקים, ${p.chase} פעמים שלח/ה עוד הודעה בלי לקבל תשובה, ${p.night} הודעות בין חצות לחמש`).join("\n");
+  const duo = st.people.length === 2;
+  return `אתה "${PERSONA}", מנתח שיחות וואטסאפ ישיר, חד ומצחיק, אבל הוגן. אתה לא מלקק ולא מתחנף, ואתה גם לא אכזרי. כתוב בעברית, בגוף שני לקורא, עם הומור יבש.
+
+כללים:
+- תסתמך רק על מה שכתוב בשיחה ובנתונים. אל תמציא. כשאתה טוען משהו, צטט הודעה קצרה (תאריך + מי + כמה מילים) כראיה.
+- אם משהו לא ברור מהטקסט, תגיד שהוא לא ברור. אתה לא קורא מחשבות.
+- אל תאבחן אף אחד פסיכולוגית ואל תדביק תוויות קליניות.
+
+מבנה הדוח:
+1. השורה התחתונה, במשפט אחד.
+2. ${duo ? "מי יותר בעניין, ולמה (עם ראיות)." : "התפקידים בקבוצה: מי מחזיק אותה, מי נעלם, מי מצחיק, מי מתווכח."}
+3. דפוסים שחוזרים: מי פותח, מי סוגר, מי משנה נושא, איך מגיבים להודעות ארוכות.
+4. דגלים ירוקים 🟢 ודגלים אדומים 🔴, שלושה מכל סוג לכל היותר.
+5. בדיחות פנימיות ומילים שחוזרות.
+6. איך השיחה השתנתה לאורך הזמן.
+7. ציון לקשר מ-1 עד 10, עם נימוק של שורה.
+8. עצה אחת, קונקרטית, לכל משתתף${duo ? "" : " מרכזי"}.
+
+נתונים שחושבו על כל השיחה (${st.total} הודעות, ${fmtDate(st.first)} עד ${fmtDate(st.last)}):
+${statLines}
+- הרצף הכי ארוך: ${st.streak} ימים. השקט הכי ארוך: ${dur(st.longestGap.ms)}.
+
+השיחה (${note}):
+${body}`;
+}
+
+function updatePromptInfo(){
+  if (!STATE) return;
+  const p = buildPrompt();
+  $("promptInfo").textContent = `${num(p.length)} תווים`;
+}
+document.querySelectorAll('input[name="size"], #anon').forEach(el => el.addEventListener("change", updatePromptInfo));
+
+$("copyPrompt").addEventListener("click", async () => {
+  const p = buildPrompt();
+  try { await navigator.clipboard.writeText(p); toast("הועתק. עכשיו פותחים צ'אט ומדביקים."); }
+  catch {
+    const ta = document.createElement("textarea");
+    ta.value = p; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); toast("הועתק. עכשיו פותחים צ'אט ומדביקים."); }
+    catch { toast("ההעתקה נכשלה. נסו בדפדפן אחר."); }
+    ta.remove();
+  }
+});
+
+/* ---------- share card ---------- */
+
+function wrapText(ctx, text, maxW){
+  const words = text.split(" "), lines = [];
+  let line = "";
+  for (const w of words){
+    const t = line ? line + " " + w : w;
+    if (ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; } else line = t;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function drawCard(){
+  const {st} = STATE;
+  const c = $("cardCanvas"), ctx = c.getContext("2d");
+  const W = c.width, H = c.height;
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, "#0f8a5f"); g.addColorStop(1, "#0b3d5c");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.direction = "rtl"; ctx.textAlign = "right"; ctx.fillStyle = "#fff";
+  const F = "system-ui, -apple-system, 'Segoe UI', Arial, sans-serif";
+  const R = W - 90;
+  ctx.font = `700 56px ${F}`; ctx.fillText(`מה ${PERSONA} חושב?`, R, 150);
+  ctx.globalAlpha = .75; ctx.font = `400 34px ${F}`;
+  ctx.fillText(`${num(st.total)} הודעות · ${fmtDate(st.first)} – ${fmtDate(st.last)}`, R, 210);
+  ctx.globalAlpha = 1;
+
+  ctx.font = `700 64px ${F}`;
+  let y = 360;
+  for (const l of wrapText(ctx, STATE.headline, W - 180).slice(0, 5)){ ctx.fillText(l, R, y); y += 84; }
+
+  y = Math.max(y + 40, 820);
+  const ps = st.people.slice(0, st.people.length === 2 ? 2 : 4);
+  ctx.font = `600 40px ${F}`;
+  for (let i = 0; i < ps.length; i++){
+    const p = ps[i];
+    const val = st.people.length === 2 && STATE.score != null ? (i === 0 ? STATE.score : 1 - STATE.score) : p.msgs / st.total;
+    ctx.fillStyle = "#fff"; ctx.textAlign = "right";
+    ctx.fillText(p.name.slice(0, 22), R, y);
+    ctx.textAlign = "left"; ctx.fillText(pct(val) + "%", 90, y);
+    ctx.fillStyle = "rgba(255,255,255,.2)"; roundRect(ctx, 90, y + 22, W - 180, 26, 13);
+    ctx.fillStyle = ["#7ef0c0", "#ffb38f", "#a9c3ff", "#e7b5f5"][i];
+    const w = (W - 180) * val; roundRect(ctx, 90 + (W - 180) - w, y + 22, w, 26, 13);
+    y += 120;
+  }
+  ctx.fillStyle = "rgba(255,255,255,.7)"; ctx.textAlign = "center"; ctx.font = `400 30px ${F}`;
+  ctx.fillText(st.people.length === 2 ? "מד ההשקעה" : "חלק בשיחה", W / 2, H - 120);
+  ctx.fillText("נותח בטלפון, בלי לשלוח את השיחה לאף אחד", W / 2, H - 70);
+}
+function roundRect(ctx, x, y, w, h, r){
+  if (w <= 0) return;
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); ctx.fill();
+}
+
+$("shareImg").addEventListener("click", () => {
+  $("cardCanvas").toBlob(async blob => {
+    const file = new File([blob], "chat-verdict.png", {type:"image/png"});
+    if (navigator.canShare && navigator.canShare({files:[file]})){
+      try { await navigator.share({files:[file], title:`מה ${PERSONA} חושב`}); return; } catch (e){ if (e.name === "AbortError") return; }
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "chat-verdict.png"; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, "image/png");
+});
+
+/* ---------- demo chat ---------- */
+
+function demoChat(){
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pick = a => a[Math.floor(rnd() * a.length)];
+  const A = "נועה", B = "איתי";
+  const aSays = ["היי מה קורה?", "ראית את מה ששלחתי?", "חחחחח אני מתה", "אז מה אתה עושה היום?", "בא לך לצאת בשבוע הבא?", "סיפרתי לך על העבודה החדשה? זה מטורף, הבוס שלי החליט שכולם עובדים מהמשרד בימי שלישי ואני עוד לא יודעת איך זה ישתלב עם הקורס", "😂😂", "נו??", "אתה חי?", "לילה טוב ❤️", "מתגעגעת", "מה אתה אומר על פיצה?", "יאללה סגרנו", "אני בדרך", "אתה זוכר את הפלאפל ההוא בפלורנטין?", "טוב אני הולכת לישון"];
+  const bSays = ["טוב", "סבבה", "חחח", "כן", "אולי", "עסוק קצת", "נדבר", "👍", "מה נשמע", "פלאפל כמובן", "יאללה", "לא יודע עדיין", "סורי נרדמתי", "אחלה"];
+  const out = [];
+  let t = new Date(2026, 2, 1, 9, 0);
+  for (let day = 0; day < 200; day++){
+    if (rnd() < .22) { t = new Date(t.getTime() + 864e5); continue; }
+    const fade = day > 150 ? .45 : 1;
+    let cur = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 8 + Math.floor(rnd() * 15), Math.floor(rnd() * 60));
+    const n = Math.floor((3 + rnd() * 12) * fade);
+    let who = rnd() < .78 ? A : B;
+    for (let k = 0; k < n; k++){
+      const msg = who === A ? pick(aSays) : pick(bSays);
+      const f = n => String(n).padStart(2, "0");
+      out.push(`${f(cur.getDate())}/${f(cur.getMonth() + 1)}/${cur.getFullYear()}, ${f(cur.getHours())}:${f(cur.getMinutes())} - ${who}: ${msg}`);
+      const gap = who === A ? (rnd() < .3 ? 60 + rnd() * 240 : 2 + rnd() * 30) : 1 + rnd() * 6;
+      cur = new Date(cur.getTime() + gap * 60e3);
+      if (who === A && rnd() < .25) continue;
+      who = who === A ? B : A;
+    }
+    if (rnd() < .2) out.push(`${String(cur.getDate()).padStart(2,"0")}/${String(cur.getMonth()+1).padStart(2,"0")}/${cur.getFullYear()}, 01:${String(Math.floor(rnd()*60)).padStart(2,"0")} - ${A}: את ער?`);
+    t = new Date(t.getTime() + 864e5);
+  }
+  return out.join("\n");
+}
+
+/* ---------- wiring ---------- */
+
+$("file").addEventListener("change", e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; });
+const drop = $("drop");
+["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
+$("demoBtn").addEventListener("click", () => run(demoChat(), "נועה ואיתי (דוגמה)"));
+$("pasteBtn").addEventListener("click", () => { showError(""); run($("paste").value, ""); });
+$("again").addEventListener("click", () => { $("results").classList.add("hidden"); $("start").classList.remove("hidden"); STATE = null; window.scrollTo({top:0}); });
+
+if (location.hash === "#demo") run(demoChat(), "נועה ואיתי (דוגמה)");
+</script>
+</body>
+</html>
