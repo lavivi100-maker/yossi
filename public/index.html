@@ -165,13 +165,18 @@ input:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
 .hist i.pk{background:var(--lav-d)}
 .emo{font-size:clamp(26px,6vw,34px);letter-spacing:4px;margin-top:6px}
 .headline{font-size:clamp(21px,3.4vw,28px);font-weight:700;line-height:1.3;text-align:center;margin:30px 4px 8px}
-.score{display:flex;align-items:center;gap:16px;background:#111;color:#fff;border-radius:var(--r);padding:16px 18px;margin:18px 0}
-.score .num{font-size:44px;font-weight:800;line-height:1;direction:ltr}
-.score .num small{font-size:.4em;opacity:.6}
 .sec{border:1px solid var(--line);border-radius:var(--r);padding:20px 20px 8px;margin:14px 0;box-shadow:0 3px 0 var(--line)}
-.sec h3{display:flex;gap:10px;align-items:flex-start;font-size:1.12em;line-height:1.35;margin:0 0 10px}
-.sec h3 .e{flex:none}
+.sec h3{font-size:clamp(20px,3vw,25px);line-height:1.3;margin:0 0 12px}
+.sec-e{font-size:38px;line-height:1;margin-bottom:8px}
 .sec p{margin:0 0 12px;color:#222}
+.sec.intro{background:var(--soft);border-color:var(--soft);box-shadow:none;font-size:1.03em}
+.sec ul,.sec ol{margin:0 0 12px;padding-inline-start:1.2em}
+.sec li{margin:6px 0}
+.who4{font-size:1.1em;margin:22px 0 8px;padding-top:16px;border-top:1px dashed #ddd}
+.sec .who4:first-of-type{border-top:0;padding-top:0}
+.bubbles{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:4px 0 16px}
+.bubble{background:#e4fad7;color:#111;border-radius:4px 16px 16px 16px;padding:8px 12px;max-width:92%;font-size:.95em;box-shadow:0 1px 0 #cfe9c0}
+.bw{display:block;font-size:.75em;font-weight:700;color:#14864f;margin-bottom:1px}
 .q-quote{background:#f3f0ff;color:#2b1f6e;border-radius:6px;padding:0 4px;font-weight:500}
 .awards{display:grid;gap:10px;margin:14px 0}
 .award{border-radius:var(--r);padding:16px 18px}
@@ -273,11 +278,11 @@ canvas#cardCanvas{display:none}
 
 <script>
 "use strict";
-const BUILD = "2026-10-25 v3 blackjack";
+const BUILD = "2026-10-26 v5 roast-flash";
 const PERSONA = "בלאק ג'ק";
 const SESSION_GAP = 4 * 3600e3;   // a gap this long starts a new conversation
 const CHASE_GAP = 20 * 60e3;      // sending again after this long with no reply counts as chasing
-const LINES_BUDGET = 80000;       // characters of chat sent for the report; the server trims per model
+const LINES_BUDGET = 400000;      // characters of chat sent for the report; the server trims per model
 const PCOL = ["--p0","--p1","--p2","--p3","--p4","--p5"];
 
 const $ = id => document.getElementById(id);
@@ -379,7 +384,7 @@ function parseChat(text){
   else if (raw.some(r => r.b > 12)) order = "mdy";
 
   const msgs = [];
-  let media = 0, deleted = 0;
+  let media = 0, deleted = 0, groupName = null;
   for (const r of raw){
     let d, mo, y;
     if (order === "ymd"){ y = r.a; mo = r.b; d = r.c; }
@@ -398,12 +403,14 @@ function parseChat(text){
     if (!sender) continue;
     if (RX_MEDIA.test(body)){ msgs.push({t, sender, text:"", media:true, audio:RX_AUDIO.test(body)}); media++; continue; }
     if (RX_DELETED.test(body)){ deleted++; continue; }
+    // on iOS the encryption notice is "sent" by the group itself; that name is not a participant
+    if (/end-to-end|מוצפנות מקצה לקצה/.test(body) && body.length < 200){ groupName = groupName || sender; continue; }
     if (r.sysMark && RX_SYSTEM.test(body) && body.length < 140) continue;
-    if (/end-to-end|מוצפנות מקצה לקצה/.test(body) && body.length < 200) continue;
     msgs.push({t, sender, text:body, media:false});
   }
-  msgs.sort((a, b) => a.t - b.t);
-  return {msgs, media, deleted};
+  const kept = groupName ? msgs.filter(m => m.sender !== groupName) : msgs;
+  kept.sort((a, b) => a.t - b.t);
+  return {msgs:kept, media, deleted, groupName};
 }
 
 /* =================== analysis =================== */
@@ -595,7 +602,7 @@ function renderStep(){
   }
   else if (s === 7){
     b.innerHTML = `<div class="loading"><div class="rings"><span class="bj lg">😎</span></div>
-      <div class="lline" id="lline"></div><div class="lbar"><i id="lbar"></i></div>
+      <div class="lline" id="lline"></div><div class="lbar"><i id="lbar"></i></div><p class="small muted" style="margin-top:14px">קריאה של כל השיחה לוקחת דקה עד שלוש. שווה לחכות.</p>
       ${err}${W.err ? `<button class="btn dark" data-act="retry">לנסות שוב</button>` : ""}</div>`;
     if (!W.err) generate();
   }
@@ -612,7 +619,7 @@ async function loadFile(file){
     const st = analyze(parsed);
     if (st.people.length < 2) throw new Error("מצאנו רק משתתף אחד. צריך לפחות שניים.");
     W.parsed = parsed; W.st = st;
-    W.title = file.name.replace(/\.(txt|zip)$/i, "").replace(/^WhatsApp Chat( with| - )?\s*/i, "").replace(/^צ'?אט WhatsApp עם\s*/, "").trim();
+    W.title = parsed.groupName || file.name.replace(/\.(txt|zip)$/i, "").replace(/^WhatsApp Chat( with| - )?\s*/i, "").replace(/^צ'?אט WhatsApp עם\s*/, "").trim();
   } catch (e){ W.err = e.message || String(e); W.st = null; }
   renderStep();
 }
@@ -678,15 +685,54 @@ function donut(parts){
   return `<svg viewBox="0 0 42 42" aria-hidden="true">${segs.join("")}</svg>`;
 }
 
-function richText(s){
-  return esc(s).split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g, "<br>").replace(/(&quot;|“|״)([^<]{2,220}?)(&quot;|”|״)/g, '<span class="q-quote">"$2"</span>').replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")}</p>`).join("");
+// The report is Markdown: "## 🎪 title" sections, "### " per person, "> name: text" quotes drawn as chat bubbles.
+const RX_LEAD_EMOJI = /^((?:\p{Extended_Pictographic}|\p{Emoji_Component}|‍|️)+)\s*(.*)$/u;
+function mdHtml(md, names){
+  const out = [], inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  let inSec = false, list = null, bub = false;
+  const closeList = () => { if (list){ out.push(`</${list}>`); list = null; } };
+  const closeBub = () => { if (bub){ out.push("</div>"); bub = false; } };
+  const openSec = cls => { closeList(); closeBub(); if (inSec) out.push("</article>"); out.push(`<article class="sec ${cls}">`); inSec = true; };
+  for (const raw of md.split("\n")){
+    const line = raw.trim();
+    let m;
+    if (!line){ closeList(); closeBub(); continue; }
+    if ((m = /^#{1,2}\s+(.*)$/.exec(line))){
+      openSec("");
+      const e = RX_LEAD_EMOJI.exec(m[1]);
+      out.push(e && e[2] ? `<div class="sec-e">${esc(e[1])}</div><h3>${inl(e[2])}</h3>` : `<h3>${inl(m[1])}</h3>`);
+      continue;
+    }
+    if (!inSec) openSec("intro");
+    if ((m = /^#{3,}\s+(.*)$/.exec(line))){ closeList(); closeBub(); out.push(`<h4 class="who4">${inl(m[1])}</h4>`); continue; }
+    if ((m = /^>\s?(.*)$/.exec(line))){
+      closeList();
+      if (!bub){ out.push('<div class="bubbles">'); bub = true; }
+      const q = /^([^:]{1,30}):\s+(.+)$/.exec(m[1]);
+      out.push(q && (names.has(q[1].trim()) || q[1].length <= 18)
+        ? `<div class="bubble"><span class="bw">${esc(q[1])}</span>${inl(q[2])}</div>`
+        : `<div class="bubble">${inl(m[1])}</div>`);
+      continue;
+    }
+    closeBub();
+    if ((m = /^(?:[-*•]|\d+[.)])\s+(.*)$/.exec(line))){
+      const kind = /^\d/.test(line) ? "ol" : "ul";
+      if (list !== kind){ closeList(); out.push(`<${kind}>`); list = kind; }
+      out.push(`<li>${inl(m[1])}</li>`);
+      continue;
+    }
+    closeList();
+    out.push(`<p>${inl(line)}</p>`);
+  }
+  closeList(); closeBub();
+  if (inSec) out.push("</article>");
+  return out.join("");
 }
 
 function renderReport(rec, opts = {}){
   show("vReport");
   const cs = rec.stats, r = rec.report;
   const label = n => cs && cs.me && n === cs.me ? "אני" : n;
-  const isGroup = cs ? cs.people.length + cs.others > 2 : (r.awards || []).length > 0;
   let tiles = "";
   if (cs){
     const parts = cs.people.slice(0, 5).map((p, i) => ({n:label(p.n), v:p.m / cs.total, c:pc(i)}));
@@ -710,20 +756,17 @@ function renderReport(rec, opts = {}){
       <div class="tile pink ${cs.emoji.length ? "" : "wide"}"><div class="lab">השקט הכי ארוך</div><div class="val">${sil.v}<small>${sil.u === "ימים" ? "ימים" : sil.u}</small></div></div>
     </div>`;
   }
-  const secs = (r.sections || []).map(s => `<article class="sec"><h3><span class="e">${esc(s.emoji)}</span><span>${esc(s.title)}</span></h3>${richText(s.body)}</article>`).join("");
-  const awardBg = ["yellow","lav","mint","peach","pink"];
-  const awards = (r.awards || []).length ? `<h2 style="margin:34px 0 10px;font-size:26px">🏆 הפרסים</h2><div class="awards">${r.awards.map((a, i) => `<div class="award ${awardBg[i % 5]}"><div class="t">${esc(a.emoji)} ${esc(a.title)}</div><div class="w"><bdi>${esc(a.winner)}</bdi></div><div>${esc(a.why)}</div></div>`).join("")}</div>` : "";
-  const score = r.score ? `<div class="score"><div class="num">${r.score}<small>/10</small></div><div><div class="small" style="opacity:.7;font-weight:600">${isGroup ? "ציון לקבוצה" : "ציון לקשר"}</div><div style="font-weight:600">${esc(r.score_label)}</div></div></div>` : "";
+  const names = new Set((cs ? cs.people : []).map(p => p.n));
+  const body = mdHtml(r.md || "", names);
   const owner = (() => { try { return localStorage.getItem("own:" + rec.id); } catch { return null; } })();
 
   $("rBody").innerHTML = `
     <div class="rhead"><span class="bj lg">😎</span>
       <div class="who">מה ${PERSONA} חושב על</div><div class="ttl"><bdi>${esc(rec.title || "הצ'אט")}</bdi></div>
       ${opts.demo ? `<span class="demo-tag">דמו · שיחה מומצאת</span>` : ""}</div>
-    ${tiles}
     ${r.headline ? `<div class="headline">"${esc(r.headline)}"</div>` : ""}
-    ${score}${secs}${awards}
-    ${r.bottom_line ? `<div class="bottom"><div class="lab">השורה התחתונה</div><p>${esc(r.bottom_line)}</p></div>` : ""}
+    ${tiles}
+    ${body}
     ${opts.demo ? `<button class="cta" style="width:100%;margin-top:14px" data-act="start">עכשיו הצ'אט שלכם ←</button>` : `
     <div class="share">
       <button class="btn" data-act="copylink">🔗 העתקת לינק</button>
@@ -772,7 +815,7 @@ function shareImage(){
   let y = 500;
   for (const l of wrapText(ctx, `"${rec.report.headline || ""}"`, W_ - 160).slice(0, 5)){ ctx.fillText(l, W_ / 2, y); y += 76; }
   if (rec.stats){
-    const cs = rec.stats, vals = [[num(cs.total), "הודעות"], [pct(cs.opener.p) + "%", "פתיחת השיחה"], [pct(cs.night) + "%", "אחרי חצות"], [rec.report.score ? rec.report.score + "/10" : num(cs.days), rec.report.score ? "ציון" : "ימים"]];
+    const cs = rec.stats, vals = [[num(cs.total), "הודעות"], [pct(cs.opener.p) + "%", "פתיחת השיחה"], [pct(cs.night) + "%", "אחרי חצות"], [num(cs.days), "ימים"]];
     const top = Math.max(y + 30, 900), tw = (W_ - 200) / 2, th = 170;
     tiles.forEach(([bg, cx, cy], i) => {
       const x = 80 + cx * (tw + 40), yy = top + cy * (th + 30);
@@ -849,33 +892,126 @@ function demoGroup(){
   return out.join("\n");
 }
 const DEMO = {
-  partner: {title:"איתי", me:"נועה", gen:demoPartner, report:{
-    headline:"נועה מחזיקה את השיחה הזאת על הגב. איתי בא לבקר.",
-    score:4, score_label:"חם רק מצד אחד",
-    sections:[
-      {emoji:"🕰️", title:"ה\"נו??\" שחוזר כל שבוע", body:"יש הודעה אחת שמספרת את כל הסיפור, והיא לא ארוכה: \"נו??\".\n\nכתבתם אותה שוב ושוב, תמיד אחרי שאלה ששאלתם ולא קיבלתם עליה תשובה. זה לא חוסר סבלנות. זה מישהו שכבר יודע שאם לא ידחוף, השיחה תמות."},
-      {emoji:"⏱️", title:"הדקות שלכם מול השעות שלו", body:"אתם עונים כמעט מיד. איתי עונה מתי שנוח לו, ולפעמים זה אחרי חצי יום.\n\nוכשהוא כבר עונה, זה \"עסוק קצת\" או \"סורי נרדמתי\". הוא לא נעלם. הוא פשוט לא ממהר. ההבדל הזה הוא הלב של הצ'אט."},
-      {emoji:"🧆", title:"הפלאפל בפלורנטין הוא הרגע הכי טוב שלכם", body:"כששאלתם \"אתה זוכר את הפלאפל ההוא בפלורנטין?\", איתי ענה \"פלאפל כמובן\" ומיד היה פתאום אחר. קצר, אבל חם.\n\nכשיש תוכנית קונקרטית ומשהו משותף, הוא שם. כשזו שיחה פתוחה על היום, הוא מתאדה."},
-      {emoji:"🌙", title:"\"אתה ער?\" בשעה אחת בלילה", body:"יש כמה הודעות כאלה, כולן שלכם. אף אחת מהן לא קיבלה תשובה באותו לילה.\n\nזה לא אומר שהוא לא אוהב אתכם. זה אומר שבשעה אחת בלילה הוא לא חושב על הצ'אט הזה, ואתם כן."},
-      {emoji:"📉", title:"החודש שבו הכול נהיה שקט", body:"בחודשיים האחרונים כמות ההודעות ירדה בערך בחצי. לא בגלל ריב, ואין רגע אחד שבו משהו נשבר.\n\nזה פשוט דעך. בדרך כלל זה אומר שמישהו הפסיק להשקיע, ומהנתונים, זה לא אתם."},
-    ],
-    awards:[], bottom_line:"אתם בעניין. איתי בעניין כשנוח לו. במקום עוד \"נו??\", תציעו תוכנית אחת קונקרטית עם יום ושעה, ותראו מה הוא עושה איתה. התשובה לזה שווה יותר מכל הצ'אט."}},
-  group: {title:"החבר'ה", me:null, gen:demoGroup, report:{
-    headline:"דניאל מנהל את הקבוצה הזאת כמו ועד בית. שירה דואגת שיהיה כיף. יונתן? יונתן קיים.",
-    score:null, score_label:"",
-    sections:[
-      {emoji:"⚽", title:"הכדורגל של שלישי הוא כל הקבוצה", body:"חצי מהשיחות פה מתחילות ב\"מי בא לכדורגל בשלישי?\". דניאל שואל, שירה צוחקת, עומר אחרי משמרת.\n\nבלי השאלה הזאת הקבוצה הייתה שקטה ימים שלמים. זה לא שיש לכם על מה לדבר. זה שיש לכם בשביל מה להיפגש."},
-      {emoji:"😂", title:"שירה צוחקת על הכול, וזה עובד", body:"\"חחחחחחח אני מתה\" זו כנראה ההודעה הכי נפוצה בקבוצה. שירה היא הקהל הכי טוב שיש.\n\nכל בדיחה של מישהו אחר מקבלת ממנה תגובה תוך דקות. בלעדיה, חצי מהבדיחות פה היו נופלות לשקט."},
-      {emoji:"🕵️", title:"מאיה קוראת הכול בסוף היום", body:"\"קראתי הכול עכשיו חחח\" זה הדפוס של מאיה. היא לא נעלמת, היא פשוט מגיעה בערב ומדביקה את כל הפער בבת אחת.\n\nזה לא חוסר עניין. זו מישהי עם יום עבודה ארוך שעדיין טורחת לקרוא."},
-      {emoji:"👻", title:"התרומה של יונתן: אגודל אחד", body:"יונתן כתב בכל התקופה כמה \"👍\" וכמה \"אוקי\", וזהו.\n\nהוא בקבוצה, הוא קורא, הוא אולי אפילו בא לכדורגל. אבל בצ'אט הוא רוח רפאים עם אגודל."},
-    ],
-    awards:[
-      {emoji:"🚂", title:"המנוע של הקבוצה", winner:"דניאל", why:"פותח שליש מהשיחות, ובלי \"יאללה תתעוררו\" שלו הקבוצה הייתה ישנה."},
-      {emoji:"🎤", title:"הקהל הכי טוב", winner:"שירה", why:"\"😂😂😂\" על כל דבר. כל קומיקאי חולם על קהל כזה."},
-      {emoji:"😴", title:"תמיד אחרי משמרת", winner:"עומר", why:"\"אני אחרי משמרת\" זה תירוץ ודרך חיים."},
-      {emoji:"👍", title:"רוח הרפאים", winner:"יונתן", why:"סך כל התרומה: אגודל ו\"אוקי\". מינימליזם."},
-    ],
-    bottom_line:"קבוצה בריאה שמחזיקה בזכות שני אנשים. אם דניאל ייקח הפסקה, אף אחד לא ישאל מי בא בשלישי. מישהו אחר שיציע את המפגש הבא, רק כדי לראות שזה אפשרי."}},
+  partner: {title:"איתי", me:"נועה", gen:demoPartner, report:{format:"md",
+    headline:"נועה כותבת מגילות. איתי עונה ב\"טוב\". ושניהם עדיין פה.",
+    md:`נועה, איתי. קוראים לי בלאק ג'ק. קראתי אלף ומשהו הודעות שלכם, ואני חייב להגיד: ראיתי שיחות בין בני ערובה למשא ומתן שהיו יותר מאוזנות מזה.
+
+הקשר שלכם מתנהל בשלושה מצבי צבירה:
+- נועה שואלת שאלה.
+- נועה שואלת "נו??".
+- איתי עונה "סבבה" אחרי ארבע שעות, כאילו כלום.
+
+בואו נפתח את התיקים. 🔥
+
+## 🗂️ התיקים
+### נועה – מנכ"לית הצ'אט 📣💬
+נועה, את מחזיקה את השיחה הזאת על הגב כמו סבל בשוק הכרמל. את פותחת את רוב השיחות, שואלת את רוב השאלות, ושולחת הודעה שנייה כשאין תשובה לראשונה.
+> נועה: נו??
+> נועה: אתה חי?
+זה לא חוסר סבלנות. זו מישהי שכבר למדה שאם היא לא תדחוף, הצ'אט ימות מוות שקט.
+
+ויש את ההודעה הזאת, שכתבת במלואה, עם פסיקים, עם הקשר, עם רגש:
+> נועה: סיפרתי לך על העבודה החדשה? הבוס החליט שכולם במשרד בימי שלישי ואני לא יודעת איך זה ישתלב עם הקורס
+ואיתי? איתי ענה "👍". אגודל אחד. על בוס, משרד, קורס וחרדה. נועה, זה לא תגובה. זה קבלה.
+
+### איתי – גדול הלקוניים 🪨👍
+איתי, אתה כותב כמו מישהו שמשלם על כל אות. "טוב". "כן". "אולי". "עסוק קצת". המילון שלך בצ'אט הזה יותר קצר מתפריט של דוכן פלאפל.
+> איתי: סורי נרדמתי
+את זה כתבת יותר מפעם אחת. או שיש לך בעיית שינה רצינית, או שזה התירוץ הכי עצלן בהיסטוריה של וואטסאפ.
+
+אבל יש לך גם רגעים. כשנועה הזכירה את הפלאפל בפלורנטין, פתאום התעוררת:
+> נועה: אתה זוכר את הפלאפל ההוא בפלורנטין?
+> איתי: פלאפל כמובן
+שתי מילים, אבל בשבילך זה כמעט שיר אהבה.
+
+## ⏱️ מי רוצה את זה יותר
+אין פה הרבה מתח דרמטי. נועה פותחת את רוב השיחות ועונה תוך דקות. איתי עונה כשנוח לו, ולפעמים זה אחרי חצי יום.
+
+הוא לא נעלם, וזה חשוב. הוא פשוט לא ממהר. והפער הזה, בין הדקות שלך לשעות שלו, הוא הלב של כל הצ'אט.
+
+## 🎗️ רגע של אמת
+בשעה אחת בלילה, יותר מפעם אחת, נועה כתבה:
+> נועה: אתה ער?
+אף אחת מההודעות האלה לא קיבלה תשובה באותו לילה. אין פה בדיחה. יש פה מישהי שחושבת על מישהו בשעה שבה כבר אין מה להסתיר.
+
+עכשיו, כשאמרנו את זה, בוא נחזור לאגודל של איתי. 👍
+
+## 🏆 מצעד המחדלים
+**הפיצה שלא הייתה:**
+> נועה: מה אתה אומר על פיצה?
+> איתי: לא יודע עדיין
+איתי, זו פיצה. לא משכנתא.
+
+**"יאללה סגרנו" שלא נסגר:** נועה כתבה "יאללה סגרנו" כמה פעמים. בכמה מהן מישהו באמת סגר משהו? את זה הצ'אט לא מספר.
+
+## 🔮 התחזית
+- נועה תמשיך לפתוח שיחות, אבל תתחיל לספור. ברגע שהיא תפסיק, איתי יגלה פתאום שהוא יודע להקליד משפטים שלמים.
+- איתי ימשיך לכתוב "סבבה" עד שמישהו ייתן לו סיבה לכתוב יותר.
+
+ועצה אחת, ברצינות: נועה, במקום עוד "נו??", תציעי תוכנית אחת קונקרטית, עם יום ושעה, ותראי מה הוא עושה איתה. התשובה לזה שווה יותר מכל אלף ההודעות.
+
+אתם לא סיפור אהבה הוליוודי. אתם פלאפל בפלורנטין: פשוט, קצת שמנוני, ובדיוק מה שבא לכם. 🧆`}},
+  group: {title:"החבר'ה", me:null, gen:demoGroup, report:{format:"md",
+    headline:"קבוצה שמחזיקה מעמד בזכות כדורגל של שלישי, שירה שצוחקת על הכול, ויונתן שקיים בעיקר בתור אגודל.",
+    md:`שלום לכל השחקנים, הפרשנים וצופי הספסל. קוראים לי בלאק ג'ק. קראתי צ'אטים של חברות הייטק, של ועדי בית ושל משפחות שלא מדברות זו עם זו, אבל קבוצה שקיימת כולה סביב השאלה "מי בא בשלישי?" עוד לא ראיתי.
+
+החיים שלכם מתחלקים לשלושה מצבי צבירה:
+- דניאל שואל מי בא לכדורגל.
+- שירה צוחקת על משהו שאף אחד עוד לא הבין.
+- עומר אחרי משמרת.
+
+בואו נפתח את התיקים. 🔥
+
+## 🎪 מי מנהל פה את הקרקס
+### דניאל – ועד הבית של הכדורגל ⚽📋
+דניאל, אתה לא חבר בקבוצה. אתה הקבוצה. שליש מההודעות שלך, וכמעט כל שיחה מתחילה אצלך.
+> דניאל: מי בא לכדורגל בשלישי?
+> דניאל: נו אנשים
+> דניאל: יאללה תתעוררו
+אתה כותב כמו מדריך בטיול שנתי שאיבד חצי מהכיתה בעין גדי. אף אחד לא ביקש ממך להיות האחראי. אתה פשוט החלטת, וטוב שכך, כי בלעדיך הקבוצה הזאת הייתה ישנה מאז מאי.
+
+### שירה – הקהל הכי טוב בארץ 🎤😂
+שירה, כל קומיקאי חולם עלייך. את צוחקת על הכול, תמיד, ובעוצמה:
+> שירה: חחחחחחח אני מתה
+> שירה: 😂😂😂
+את ההודעה "אני מתה" כתבת כל כך הרבה פעמים, שמבחינה סטטיסטית את כבר רוח רפאים. אבל רוח רפאים שמחה, ובלעדייך חצי מהבדיחות פה היו נופלות לשקט.
+
+### עומר – תמיד אחרי משמרת 😴🍕
+עומר, "אני אחרי משמרת" זה לא תירוץ אצלך. זו זהות.
+> עומר: אני אחרי משמרת
+> עומר: פיצה?
+מצד אחד עייף, מצד שני מציע פיצה. אתה הסטודנט הנצחי של הקבוצה, גם אם אתה בכלל לא סטודנט.
+
+### מאיה – קוראת הכול בסוף היום 🕵️‍♀️
+> מאיה: קראתי הכול עכשיו חחח
+מאיה לא נעלמת. היא פשוט מגיעה בעשר בלילה, קוראת שלוש מאות הודעות ברצף, ומגיבה לבדיחה מהצהריים. זו לא חוסר עניין, זו מחויבות.
+
+### יונתן – רוח הרפאים עם האגודל 👻👍
+יונתן, כל התרומה שלך לקבוצה בכל התקופה:
+> יונתן: 👍
+> יונתן: אוקי
+זה לא צ'אט, זה אישור קבלה. אתה בקבוצה כמו שעציץ נמצא בסלון. כולם יודעים שאתה שם. אף אחד לא מצפה שתגיד משהו.
+
+## 🎗️ רגע של אמת
+מתחת לכל ה"מי בא בשלישי", יש פה משהו יפה: קבוצה שבה מישהו טורח, שבוע אחרי שבוע, לשאול מי מגיע. רוב קבוצות החברים מתות בשקט כי כולם מחכים שמישהו אחר יציע. אצלכם דניאל מציע, שירה מתלהבת, וזה מספיק כדי שתמשיכו להיפגש.
+
+עכשיו, כשאמרנו את זה, בואו נחזור ליונתן. 👍
+
+## 🏆 מצעד המחדלים
+**מבצע המגרש:**
+> דניאל: אני מזמין מגרש
+> דניאל: מי מביא כדור?
+הזמנת מגרש בלי לוודא שיש כדור. זה כמו להזמין מסעדה ולשאול מי מביא צלחות.
+
+**"אמרתי לכם":** עומר כתב את זה כמה פעמים, ואף פעם לא ברור מה בדיוק הוא אמר. אבל הוא אמר.
+
+## 🔮 התחזית
+- דניאל יפתח קבוצת וואטסאפ נפרדת רק לכדורגל, ואז עוד אחת לתיאום הקבוצה של הכדורגל.
+- שירה תמשיך לצחוק, ותגלה שהיא אחראית לשמונים אחוז מהאימוג'ים בטלפון של כולם.
+- עומר יסיים משמרת אחת, יזמין פיצה ויירדם לפני שהיא מגיעה.
+- יונתן ישלח 👍 לחתונה של דניאל.
+
+אתם קבוצה שקיימת בזכות שני אנשים ומשחק אחד בשבוע. אם דניאל ייקח הפסקה, אף אחד לא ישאל מי בא בשלישי. אז שמישהו אחר יציע את המפגש הבא, רק כדי לראות שזה אפשרי. ⚽🍻`}},
 };
 function openDemo(k){
   const d = DEMO[k];

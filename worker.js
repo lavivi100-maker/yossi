@@ -1,16 +1,18 @@
 // blackjack.ly-systems.co.il: serves the site from public/ and the /api/* endpoints.
 // Every paid-looking piece degrades to a free one: no GEMINI_KEY → Workers AI, no RESEND_KEY → no email step.
-const BUILD = "2026-10-25 v3 brandon-style";
+const BUILD = "2026-10-26 v5 roast-flash";
 const ORIGIN = "https://blackjack.ly-systems.co.il";
 const ORIGINS = [ORIGIN, "https://yossi.ly-systems.co.il"];
-const GEMINI_MODELS = ["gemini-flash-latest", "gemini-flash-lite-latest"];
-// Free fallbacks, best Hebrew first (compared on the same chat, 2026-10-25). budget = characters of chat sent.
+// Gemini reads the whole chat (1M-token context). Pro has no free quota (429), so Flash leads;
+// Flash is sometimes briefly overloaded (503), so it gets a second try before falling to Lite.
+const GEMINI_MODELS = ["gemini-flash-latest", "gemini-flash-latest", "gemini-flash-lite-latest"];
+const GEMINI_BUDGET = 400000;          // characters of chat
+// Free fallbacks when Gemini is missing or out of quota. budget = characters of chat they can take.
 const CF_MODELS = [
-  {id: "@cf/openai/gpt-oss-120b", budget: 45000, responses: true},
-  {id: "@cf/meta/llama-4-scout-17b-16e-instruct", budget: 45000},
+  {id: "@cf/openai/gpt-oss-120b", budget: 60000, responses: true},
+  {id: "@cf/meta/llama-4-scout-17b-16e-instruct", budget: 60000},
   {id: "@cf/meta/llama-3.3-70b-instruct-fp8-fast", budget: 20000},
 ];
-const GEMINI_BUDGET = 70000;
 const REPORT_TTL = 30 * 86400;
 const LIMITS = {codePerIpHour: 6, codePerEmailHour: 3, reportPerEmailDay: 5, reportPerIpDay: 8, codeTries: 5};
 
@@ -18,7 +20,7 @@ const CONTEXTS = {
   partner: "זוגיות או משהו רומנטי (בן/בת זוג, משהו לא מוגדר, אקס)",
   group: "קבוצת חברים",
   friend: "חבר או חברה קרובים",
-  family: "משפחה",
+  family: "קבוצת משפחה",
   work: "עבודה / צוות",
   other: "קשר אחר",
 };
@@ -74,83 +76,87 @@ function trimLines(lines, budget){
 }
 
 function buildPrompt(input, budget){
-  const {lines, statsText, context, me, questions, people} = input;
+  const {lines, statsText, context, me, questions, people, title} = input;
   const chat = trimLines(lines, budget);
   const isGroup = people.length > 2;
-  const other = people.filter(p => p !== me);
-  return `אתה "בלאק ג'ק", מנתח צ'אטים. ישיר, שנון וחם: אכזרי, הוגן, ומוזר-חביב. אתה קורא את כל השיחה ואומר מה באמת קורה בה, בלי לייפות ובלי להתחנף.
+  const count = lines.length;
+  const arc = isGroup ? `
+1. פתיחה: פנה לכל הקבוצה בשם מצחיק שמתאים לה. הצג את עצמך ("קוראים לי בלאק ג'ק") וצחק על שם הקבוצה${title ? ` ("${title}")` : ""}. סכם את החיים שלהם ב-3 "מצבי צבירה" ברשימה, ואז משפט מעבר כמו "בואו נפתח את התיקים".
+2. סעיף על ההיררכיה: מי מנהל פה מה. לכל אחד מהמשתתפים הפעילים (עד 8) כותרת משנה: שם, כינוי מצחיק ו-1–2 אימוג'ים. אחריה 2–4 פסקאות עליו, עם 1–3 ציטוטים אמיתיים שלו ותגובות של אחרים אליו.
+3. סעיף אחד או שניים על הנושאים שחוזרים בקבוצה, עם ציטוטים.
+4. "רגע של אמת": רגע אמיתי ורגשי מהשיחה (משהו קשה, מרגש או אמיתי). תכתוב עליו בכבוד ובלי בדיחות, תסביר מה הוא אומר על הקשר ביניהם, ואז משפט שחוזר לצחוק.
+5. "מצעד המחדלים": 3–5 תקריות קצרות ומצחיקות מהשיחה, כל אחת עם כותרת מודגשת וציטוטים.
+6. "התחזית": איפה כל אחד יהיה בעוד שלוש שנים, ברשימה. מוגזם, אבל נשען על מה שהם באמת.
+7. סגירה: פסקה חמה ועוקצנית שחוזרת לבדיחה פנימית או לשם הקבוצה, ומסתיימת בשורה חזקה.` : `
+1. פתיחה: פנה ישירות ("אתם") והצג את עצמך. משפט שמסכם את הסיפור של השניים, ו-3 "מצבי צבירה" של הקשר ברשימה.
+2. תיק לכל אחד מהשניים: כותרת משנה עם שם, כינוי ואימוג'י. מה הוא עושה בצ'אט, עם ציטוטים.
+3. "מי רוצה את זה יותר": עם הנתונים (מי פותח, מי עונה מהר, מי רודף) וציטוטים.
+4. רגע או שבוע שבו משהו השתנה, עם ציטוטים.
+5. "רגע של אמת": רגע אמיתי, בכבוד.
+6. "מצעד המחדלים": 3–4 תקריות מצחיקות.
+7. התחזית ועצה אחת כנה, ואז שורת סגירה.`;
 
-ההקשר: ${CONTEXTS[context] || CONTEXTS.other}.
-${me ? `מי ששלח לך את הצ'אט: "${me}". פנה אליו בגוף שני רבים ("אתם", "כתבתם"), ול${isGroup ? "אחרים" : `"${other[0] || "הצד השני"}"`} בשמם.` : "מי ששלח את הצ'אט לא משתתף בו. כתוב עליהם בגוף שלישי, בשמם."}
-${questions ? `מה מעניין אותו במיוחד: ${questions}\nתקדיש לזה סעיף משלו ותענה ישירות.` : ""}
+  return `אתה "בלאק ג'ק", קומיקאי שעושה רוסט לצ'אטים של וואטסאפ. קראת מיליוני צ'אטים, ואתה כותב כמו סטנדאפיסט ישראלי חד: מגזים, ספציפי, מצחיק מאוד, ובסוף גם חם ואוהב. אתה יורד על אנשים כי אכפת לך מהם.
+
+ההקשר: ${CONTEXTS[context] || CONTEXTS.other}${title ? `, שם הצ'אט: "${title}"` : ""}.
+${me ? `מי ששלח לך את הצ'אט: "${me}". גם הוא חוטף, לא פחות מאחרים.` : ""}
+${questions ? `מה מעניין אותו במיוחד: ${questions}. תתייחס לזה בתוך הדוח.` : ""}
+
+מבנה הדוח:${arc}
 
 איך כותבים:
-- כל כותרת סעיף ספציפית וסקרנית, ונשענת על פרט אמיתי מהשיחה: רגע, שבוע, מילה, הודעה. לדוגמה (רק לסגנון): "השבוע שבו הכול השתנה", "מה בעצם מסתתר מאחורי ה'חחח' של דנה", "ההודעה שנכתבה מחדש ארבע פעמים". אסור כותרות גנריות כמו "דפוסי תקשורת" או "סיכום".
-- כל סעיף 2–3 פסקאות קצרות. צטטו הודעה אמיתית קצרה במירכאות, עם התאריך, כראיה.
-- משפטים קצרים. הומור יבש. בלי מילים גבוהות ובלי סימני קריאה מיותרים.
-- רק מה שכתוב בשיחה ובנתונים. אל תמציא ציטוטים או אירועים. מה שלא ברור, תגיד שלא ברור. אתה לא קורא מחשבות.
-- בלי אבחנות פסיכולוגיות ובלי תוויות קליניות.
-- 5 עד 7 סעיפים.${isGroup ? "\n- בקבוצה: תן 4–6 פרסים (awards), כל אחד עם עקיצה שמצטטת הודעה אמיתית." : ""}
+- ספציפי, ספציפי, ספציפי. כל בדיחה נשענת על פרט אמיתי מהשיחה: מקום, אירוע, ביטוי שחוזר, הרגל, טעות כתיב, שם של מישהו. בלי בדיחות כלליות שמתאימות לכל קבוצה.
+- ציטוטים: העתק הודעות אמיתיות מילה במילה, כולל שגיאות כתיב ואימוג'ים. אסור להמציא ציטוט. ציטוט כותבים בשורה נפרדת שמתחילה ב-"> ", ואפשר כמה שורות ברצף (גם של כמה אנשים: "> שם: טקסט").
+- השוואות מוגזמות ודימויים מצחיקים ("כאילו עבר תרגום מגוגל טרנסלייט מיידיש"), שאלות רטוריות, ושורות מחץ קצרות בסוף פסקה.
+- עברית מדוברת וישראלית, עם סלנג במידה. פסקאות קצרות.
+- ${isGroup ? "אורך: 1,800–3,000 מילים." : "אורך: 1,200–2,000 מילים."}
+- גבולות: לא צוחקים על מוות, פציעה, מחלה או אובדן אמיתיים. אותם מכבדים. בלי עלבונות על מראה, מוצא, מגדר או נטייה, ובלי תוכן מיני על אף אחד.
 
-החזר JSON בלבד, בלי שום טקסט מסביב, במבנה הזה:
-{"headline":"משפט אחד חד שמסכם הכול","score":${isGroup ? "null" : "מספר 1-10 לבריאות הקשר"},"score_label":"${isGroup ? "" : "2-4 מילים שמסבירות את הציון"}","sections":[{"emoji":"🔥","title":"...","body":"פסקה\\n\\nפסקה"}],"awards":[${isGroup ? '{"emoji":"🏆","title":"שם הפרס","winner":"שם","why":"..."}' : ""}],"bottom_line":"2-3 משפטים: השורה התחתונה ועצה אחת קונקרטית"}
+פורמט (Markdown פשוט בלבד):
+- השורה הראשונה: "! " ואחריו משפט מחץ אחד שמסכם את כל הצ'אט (ישמש לשיתוף).
+- כותרת סעיף: "## " ואחריה אימוג'י ואז הכותרת.
+- כותרת משנה לאדם: "### ".
+- ציטוטים: "> ". רשימות: "- ". הדגשה: **כך**.
+- בלי טבלאות, בלי קישורים ובלי קוד.
 
-נתונים שחושבו על כל השיחה:
+נתונים שחושבו על כל ${count} ההודעות:
 ${statsText}
 
-השיחה${chat.partial ? " (קטע: ההתחלה והחלק האחרון)" : ""}:
+השיחה${chat.partial ? " (קטע: ההתחלה והחלק האחרון)" : " המלאה"}:
 ${chat.text}`;
 }
 
-// Free models often emit almost-JSON; repair the common slips before giving up.
-function looseJson(raw){
-  const tries = [raw, raw.replace(/}\s*}\s*,\s*{/g, "},{").replace(/:\s*\\"/g, ': "').replace(/,\s*([}\]])/g, "$1")];
-  for (const t of tries){ try { return JSON.parse(t); } catch {} }
-  // last resort: pull the fields out one by one
-  const str = re => { const m = re.exec(raw); return m ? JSON.parse('"' + m[1] + '"') : ""; };
-  const sections = [];
-  const rx = /"emoji"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*"title"\s*:\s*\\?"((?:[^"\\]|\\.)*)"\s*,\s*"body"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
-  let m;
-  while ((m = rx.exec(raw))) try { sections.push({emoji: JSON.parse('"' + m[1] + '"'), title: JSON.parse('"' + m[2] + '"'), body: JSON.parse('"' + m[3] + '"')}); } catch {}
-  if (!sections.length) return null;
-  const score = /"score"\s*:\s*(\d+)/.exec(raw);
-  try {
-    return {headline: str(/"headline"\s*:\s*"((?:[^"\\]|\\.)*)"/), score: score ? +score[1] : null,
-      score_label: str(/"score_label"\s*:\s*"((?:[^"\\]|\\.)*)"/), bottom_line: str(/"bottom_line"\s*:\s*"((?:[^"\\]|\\.)*)"/), sections, awards: []};
-  } catch { return {sections, awards: []}; }
-}
-
-function parseReport(text){
-  const s = text.indexOf("{"), e = text.lastIndexOf("}");
-  if (s >= 0 && e > s){
-    try {
-      const r = looseJson(text.slice(s, e + 1));
-      if (r && Array.isArray(r.sections) && r.sections.length) return {
-        headline: String(r.headline || ""), score: Number.isFinite(+r.score) && r.score !== null ? Math.max(1, Math.min(10, +r.score)) : null,
-        score_label: String(r.score_label || ""), bottom_line: String(r.bottom_line || ""),
-        sections: r.sections.slice(0, 9).map(x => ({emoji: String(x.emoji || "•").slice(0, 8), title: String(x.title || ""), body: String(x.body || "")})),
-        awards: Array.isArray(r.awards) ? r.awards.slice(0, 8).map(a => ({emoji: String(a.emoji || "🏆").slice(0, 8), title: String(a.title || ""), winner: String(a.winner || ""), why: String(a.why || "")})) : [],
-      };
-    } catch {}
+// Report = Markdown with a "! headline" first line; anything else is kept as-is.
+function parseMd(text){
+  let md = String(text || "").replace(/^```(?:markdown|md)?\s*/i, "").replace(/```\s*$/, "").trim();
+  let headline = "";
+  const m = /^!\s*(.+)\n/.exec(md);
+  if (m){ headline = m[1].trim(); md = md.slice(m[0].length).trim(); }
+  if (!headline){
+    const first = md.split("\n").find(l => l.trim() && !/^[#>-]/.test(l.trim())) || "";
+    headline = first.slice(0, 160);
   }
-  return {headline: "", score: null, score_label: "", bottom_line: "", awards: [], sections: [{emoji: "📝", title: "מה בלאק ג'ק חושב", body: text.replace(/[{}"]/g, "")}]};
+  return {format: "md", headline, md};
 }
+const usable = r => r.md.length > 1500 && (r.md.match(/^## /gm) || []).length >= 3;
 
-async function viaGemini(env, prompt){
-  let last;
-  for (const model of GEMINI_MODELS){
+async function viaGemini(env, prompt, errors){
+  for (const [i, model] of GEMINI_MODELS.entries()){
+    if (i && GEMINI_MODELS[i - 1] === model) await new Promise(r => setTimeout(r, 4000));
     const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: "POST",
       headers: {"Content-Type": "application/json", "x-goog-api-key": env.GEMINI_KEY},
-      body: JSON.stringify({contents: [{role: "user", parts: [{text: prompt}]}],
-        generationConfig: {temperature: 0.9, maxOutputTokens: 6000, responseMimeType: "application/json"}}),
+      body: JSON.stringify({contents: [{role: "user", parts: [{text: prompt}]}], generationConfig: {temperature: 1, maxOutputTokens: 30000}}),
     });
     const data = await r.json().catch(() => ({}));
-    const text = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("").trim();
-    if (r.ok && text) return {text, engine: model};
-    last = `${model}: ${r.status} ${JSON.stringify(data.error || {}).slice(0, 160)}`;
+    const text = (data.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || "").join("").trim();
+    if (r.ok && text){
+      const report = parseMd(text);
+      if (usable(report)) return {engine: model, report};
+      errors.push(model + ": short answer");
+    } else errors.push(`${model}: ${r.status} ${JSON.stringify(data.error?.message || data.candidates?.[0]?.finishReason || "").slice(0, 160)}`);
   }
-  throw new Error(last);
+  return null;
 }
 
 async function viaWorkersAI(env, input, errors){
@@ -160,27 +166,37 @@ async function viaWorkersAI(env, input, errors){
       let text;
       if (m.responses){
         // gpt-oss speaks the Responses format; keep only the final message, not its reasoning
-        const out = await env.AI.run(m.id, {input: prompt, reasoning: {effort: "low"}});
+        const out = await env.AI.run(m.id, {input: prompt, reasoning: {effort: "low"}, max_output_tokens: 9000});
         text = (out?.output || []).filter(o => o.type === "message").flatMap(o => o.content || []).map(c => c.text || "").join("");
       } else {
-        const out = await env.AI.run(m.id, {messages: [{role: "user", content: prompt}], max_tokens: 3500, temperature: 0.8});
-        text = typeof out?.response === "string" ? out.response : JSON.stringify(out?.response || "");
+        const out = await env.AI.run(m.id, {messages: [{role: "user", content: prompt}], max_tokens: 6000, temperature: 0.9});
+        text = typeof out?.response === "string" ? out.response : "";
       }
-      const report = parseReport(text || "");
-      if (report.sections.length >= 3) return {text, engine: m.id, report};
+      const report = parseMd(text);
+      if (usable(report)) return {engine: m.id, report};
       errors.push(m.id + ": unusable");
     } catch (e){ errors.push(m.id + ": " + e.message); }
   }
-  throw new Error(errors.join(" | "));
+  return null;
 }
 
 async function writeReport(env, input){
   const errors = [];
-  if (env.GEMINI_KEY){
-    try { const r = await viaGemini(env, buildPrompt(input, GEMINI_BUDGET)); return {...r, report: parseReport(r.text)}; }
-    catch (e){ errors.push(e.message); console.log("gemini failed:", e.message); }
-  }
-  return viaWorkersAI(env, input, errors);
+  const out = (env.GEMINI_KEY && await viaGemini(env, buildPrompt(input, GEMINI_BUDGET), errors)) || await viaWorkersAI(env, input, errors);
+  if (errors.length) console.log("AI fallbacks:", errors.join(" | "));
+  if (!out) throw new Error(errors.join(" | "));
+  return {...out, fallbacks: errors};
+}
+
+// A long report takes minutes; keep the connection alive with whitespace until the JSON is ready.
+function slowJson(ctx, work){
+  const {readable, writable} = new TransformStream();
+  const w = writable.getWriter(), enc = new TextEncoder();
+  const beat = setInterval(() => w.write(enc.encode(" ")).catch(() => {}), 8000);
+  const job = work().then(obj => obj, e => ({error: true, message: e.message || "שגיאה בשרת."}))
+    .then(async obj => { clearInterval(beat); await w.write(enc.encode(JSON.stringify(obj))); await w.close(); });
+  ctx.waitUntil(job);
+  return new Response(readable, {headers: {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"}});
 }
 
 /* ---------- routes ---------- */
@@ -192,8 +208,7 @@ async function api(req, env, ctx, path){
   if (path === "/api/config") return json({build: BUILD, email: emailOn, engine: env.GEMINI_KEY ? "gemini" : "workers-ai"});
 
   if (req.method === "GET" && path.startsWith("/api/r/")){
-    const id = path.slice(7);
-    const rep = await env.YOSSI.get("rep:" + id, "json");
+    const rep = await env.YOSSI.get("rep:" + path.slice(7), "json");
     if (!rep) return fail("הדוח הזה לא קיים או שפג תוקפו.", 404);
     delete rep.owner;
     return json(rep);
@@ -258,31 +273,33 @@ async function api(req, env, ctx, path){
     if (!await bump(env, "ipr:" + ip + ":" + new Date().toISOString().slice(0, 10), 86400, LIMITS.reportPerIpDay))
       return fail("הגעתם למכסת הדוחות להיום. נסו שוב מחר.", 429);
 
-    const lines = Array.isArray(body.lines) ? body.lines.map(String).slice(-6000) : [];
+    const lines = Array.isArray(body.lines) ? body.lines.map(String).slice(-20000) : [];
     if (lines.length < 5) return fail("השיחה קצרה מדי לניתוח.");
     const input = {
-      lines, statsText: String(body.statsText || "").slice(0, 6000), context: String(body.context || "other"),
+      lines, statsText: String(body.statsText || "").slice(0, 8000), context: String(body.context || "other"),
       me: body.me ? String(body.me).slice(0, 60) : "", questions: String(body.questions || "").slice(0, 500),
-      people: Array.isArray(body.people) ? body.people.map(String).slice(0, 40) : [],
+      people: Array.isArray(body.people) ? body.people.map(String).slice(0, 40) : [], title: String(body.title || "").slice(0, 80),
     };
-    let out;
-    try { out = await writeReport(env, input); }
-    catch (e){
-      console.log("AI failed:", e.message);
-      return fail("בלאק ג'ק עמוס כרגע. נסו שוב בעוד כמה דקות.", 503);
-    }
-    const id = randomId(10), owner = randomId(20);
-    const rec = {id, created: Date.now(), title: String(body.title || "").slice(0, 80), context: input.context, me: input.me,
-      stats: body.stats || null, report: out.report, engine: out.engine, owner: await sha256(owner)};
-    await env.YOSSI.put("rep:" + id, JSON.stringify(rec), {expirationTtl: REPORT_TTL});
-    if (email){
-      ctx.waitUntil(sendMail(env, email, "בלאק ג'ק סיים לקרוא. הנה מה שהוא חושב 👀", mailShell(`<h2 style="margin:12px 0">הדוח שלכם מוכן</h2>
-        <p style="font-size:18px">"${out.report.headline.replace(/[<>&]/g, "")}"</p>
-        <p><a href="${ORIGIN}/r/${id}" style="display:inline-block;background:#111;color:#fff;padding:14px 22px;border-radius:12px;text-decoration:none;font-weight:bold">לקריאת הדוח המלא ←</a></p>
-        <p style="color:#666">הלינק פעיל 30 יום.</p>`)).catch(e => console.log(e.message)));
-    }
-    delete rec.owner;
-    return json({...rec, owner});
+    return slowJson(ctx, async () => {
+      let out;
+      try { out = await writeReport(env, input); }
+      catch (e){
+        console.log("AI failed:", e.message);
+        return {error: true, message: "בלאק ג'ק עמוס כרגע. נסו שוב בעוד כמה דקות."};
+      }
+      const id = randomId(10), owner = randomId(20);
+      const rec = {id, created: Date.now(), title: input.title, context: input.context, me: input.me,
+        stats: body.stats || null, report: out.report, engine: out.engine, fallbacks: out.fallbacks, owner: await sha256(owner)};
+      await env.YOSSI.put("rep:" + id, JSON.stringify(rec), {expirationTtl: REPORT_TTL});
+      if (email){
+        ctx.waitUntil(sendMail(env, email, "בלאק ג'ק סיים לקרוא. הנה מה שהוא חושב 👀", mailShell(`<h2 style="margin:12px 0">הדוח שלכם מוכן</h2>
+          <p style="font-size:18px">"${out.report.headline.replace(/[<>&]/g, "")}"</p>
+          <p><a href="${ORIGIN}/r/${id}" style="display:inline-block;background:#111;color:#fff;padding:14px 22px;border-radius:12px;text-decoration:none;font-weight:bold">לקריאת הדוח המלא ←</a></p>
+          <p style="color:#666">הלינק פעיל 30 יום.</p>`)).catch(e => console.log(e.message)));
+      }
+      delete rec.owner;
+      return {...rec, owner};
+    });
   }
 
   return fail("not found", 404);

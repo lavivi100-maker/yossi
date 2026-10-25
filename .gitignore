@@ -2,3 +2,7 @@
 node_modules/
 .runtime/
 .dev.vars
+
+# private chat exports, never commit
+*.zip
+*.txt
