@@ -2,225 +2,317 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>מה יוסי חושב</title>
-<meta name="description" content="מעלים ייצוא של צ'אט מוואטסאפ ומקבלים ניתוח: מי יותר בעניין, מי פותח, מי עונה מהר. הכול רץ בטלפון, שום דבר לא נשלח.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מה בלאק ג'ק חושב</title>
+<meta name="description" content="שלחו צ'אט מוואטסאפ. בלאק ג'ק קורא כל הודעה ואומר לכם מה באמת קורה שם.">
+<meta property="og:title" content="מה בלאק ג'ק חושב?">
+<meta property="og:description" content="שלחו צ'אט מוואטסאפ. בלאק ג'ק קורא כל הודעה ואומר לכם מה באמת קורה שם.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🃏</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f6f3ee; --card:#ffffff; --ink:#1d1b19; --muted:#6b645c; --line:#e4ddd3;
-  --accent:#0f8a5f; --accent-ink:#ffffff; --a:#0f8a5f; --b:#d9572b; --c:#3b6fd8; --d:#a347c2; --e:#c99a12;
-  --soft:#eef7f2; --warn:#fff4e5; --warn-ink:#7a4a00;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#141311; --card:#1f1d1a; --ink:#f1ece4; --muted:#a39a8f; --line:#35312c;
-    --accent:#2bbf86; --accent-ink:#06130d; --a:#2bbf86; --b:#f07a4f; --c:#6f97f0; --d:#c77ee0; --e:#e2b93b;
-    --soft:#17261f; --warn:#2b2214; --warn-ink:#f2c77a;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#141311; --card:#1f1d1a; --ink:#f1ece4; --muted:#a39a8f; --line:#35312c;
-  --accent:#2bbf86; --accent-ink:#06130d; --a:#2bbf86; --b:#f07a4f; --c:#6f97f0; --d:#c77ee0; --e:#e2b93b;
-  --soft:#17261f; --warn:#2b2214; --warn-ink:#f2c77a;
+  --bg:#ffffff; --ink:#111111; --muted:#6f6f6f; --line:#e7e7e7; --soft:#f5f5f7;
+  --blue:#3d7bf7; --blue-d:#2a5fd0;
+  --mint:#bdf1dc; --mint-i:#0b5a43;
+  --yellow:#ffeeb3; --yellow-i:#6a4d00;
+  --lav:#ddd6ff; --lav-i:#3a2a8c; --lav-d:#4b2bb8;
+  --peach:#ffd9c6; --peach-i:#7a3412;
+  --pink:#ffcbdc; --pink-i:#8b1a43;
+  --p0:#ff8fcf; --p1:#ffc83a; --p2:#6f8cff; --p3:#36cf8f; --p4:#a77bff; --p5:#ff8a5c;
+  --r:20px;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
-  font-size:clamp(15px,1.1vw + 11px,18px);line-height:1.55;overflow-x:hidden}
-main{max-width:760px;margin:0 auto;padding:16px 16px 48px}
-h1{font-size:clamp(28px,5vw + 10px,48px);line-height:1.1;margin:.4em 0 .2em}
-h2{font-size:clamp(19px,1.5vw + 14px,26px);margin:0 0 .6em}
-h3{font-size:1em;margin:1em 0 .4em}
-p{margin:.4em 0}
-.lead{color:var(--muted);font-size:1.05em}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,3vw,26px);margin:16px 0}
-.ltr{direction:ltr;unicode-bidi:isolate}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Rubik,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:clamp(15px,.6vw + 13px,18px);line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
 bdi{unicode-bidi:isolate}
+.hidden{display:none !important}
 .muted{color:var(--muted)}
-.small{font-size:.86em}
-button,.btn{font:inherit;min-height:48px;padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
-.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.drop{display:block;border:2px dashed var(--line);border-radius:16px;padding:24px 16px;text-align:center;cursor:pointer;min-height:120px}
-.drop strong{display:block;font-size:1.15em;margin-bottom:4px}
-.drop.over{border-color:var(--accent);background:var(--soft)}
-input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
-textarea{width:100%;min-height:120px;font:inherit;font-size:.9em;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px}
-details summary{cursor:pointer;min-height:48px;display:flex;align-items:center;font-weight:600}
-ol.how{padding-inline-start:1.3em;margin:.3em 0}
-ol.how li{margin:.25em 0}
-.err{background:var(--warn);color:var(--warn-ink);border-radius:12px;padding:12px 14px;margin-top:12px}
-.hidden{display:none}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
-.stat{background:var(--bg);border-radius:14px;padding:12px}
-.stat b{display:block;font-size:1.5em;line-height:1.2}
-.verdict{list-style:none;padding:0;margin:0}
-.verdict li{padding:12px 0;border-bottom:1px solid var(--line)}
-.verdict li:last-child{border-bottom:0}
-.meter{display:flex;height:44px;border-radius:12px;overflow:hidden;margin:10px 0 4px;font-weight:700;font-size:.95em}
-.meter div{display:flex;align-items:center;justify-content:center;color:#fff;min-width:0;white-space:nowrap;overflow:hidden}
-.bars .bar{margin:8px 0}
-.bars .track{background:var(--bg);border-radius:8px;height:14px;overflow:hidden}
-.bars .fill{height:100%;border-radius:8px}
-.bars .lbl{display:flex;justify-content:space-between;gap:8px;font-size:.92em}
-.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{border-collapse:collapse;width:100%;font-size:.9em;min-width:520px}
-th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}
-th{color:var(--muted);font-weight:600}
-td.n{direction:ltr;unicode-bidi:isolate;text-align:end}
-.hours{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;align-items:end;height:110px;direction:ltr}
-.hours div{background:var(--accent);border-radius:3px 3px 0 0;min-height:2px}
-.hours-axis{display:flex;justify-content:space-between;direction:ltr;font-size:.75em;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{background:var(--bg);border-radius:999px;padding:4px 12px;font-size:.92em}
-.chip i{font-style:normal;color:var(--muted);margin-inline-start:4px}
-.dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;vertical-align:middle;margin-inline-end:6px}
-.seg{display:flex;flex-wrap:wrap;gap:8px}
-.seg label{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
-.seg input{width:20px;height:20px}
-.report{margin-top:16px;border-top:1px solid var(--line);padding-top:8px}
-.report h3{font-size:1.1em;margin:1.1em 0 .3em}
-.report ul,.report ol{padding-inline-start:1.3em;margin:.3em 0}
-.report li{margin:.3em 0}
-canvas{max-width:100%;height:auto;border-radius:14px;display:block;margin:10px auto}
-footer{text-align:center;color:var(--muted);font-size:.8em;margin-top:28px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:9;max-width:90vw}
-@media print{
-  body{background:#fff;color:#000}
-  .card{break-inside:avoid;border-color:#ccc}
-  #start,#shareCard,button,.btn{display:none !important}
-}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* ---- top bar ---- */
+.topbar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topbar .in{display:flex;align-items:center;justify-content:space-between;height:60px;max-width:1100px;margin:0 auto;padding:0 16px}
+.pill{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:999px;border:0;background:var(--blue);color:#fff;font-weight:600;
+  box-shadow:0 3px 0 var(--blue-d);text-decoration:none}
+.pill:active{transform:translateY(2px);box-shadow:0 1px 0 var(--blue-d)}
+
+/* ---- avatar ---- */
+.bj{position:relative;display:inline-grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 35% 30%,#3a3a3a,#0b0b0b 70%);
+  width:44px;height:44px;font-size:24px;box-shadow:0 0 0 3px #fff,0 0 0 5px #111}
+.bj::after{content:"🃏";position:absolute;bottom:-4px;left:-6px;font-size:.55em;transform:rotate(-14deg)}
+.bj.lg{width:96px;height:96px;font-size:54px}
+
+/* ---- landing ---- */
+.hero{text-align:center;padding:clamp(40px,8vw,90px) 0 20px}
+.cluster{display:flex;justify-content:center;margin-bottom:28px}
+.cluster span{width:clamp(48px,9vw,64px);height:clamp(48px,9vw,64px);border-radius:50%;display:grid;place-items:center;font-size:clamp(24px,4.5vw,32px);
+  margin-inline-start:-10px;box-shadow:0 0 0 3px #fff,0 6px 16px rgba(0,0,0,.08)}
+.cluster span:first-child{margin-inline-start:0}
+.cluster .bj{width:clamp(56px,10.5vw,74px);height:clamp(56px,10.5vw,74px);font-size:clamp(30px,5.5vw,40px);z-index:2;margin-inline-start:-10px}
+h1{font-size:clamp(32px,6vw,56px);line-height:1.12;font-weight:600;margin:0 auto 18px;max-width:14em;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:clamp(16px,1.6vw,19px);margin:0 auto 30px;max-width:30em}
+.cta{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:0 44px;border-radius:14px;border:0;
+  background:#111;color:#fff;font-weight:700;font-size:1.1em;text-decoration:none;isolation:isolate}
+.cta::before{content:"";position:absolute;inset:auto 14% -16px;height:30px;z-index:-1;filter:blur(18px);opacity:.85;
+  background:linear-gradient(90deg,#7cf29a,#41b6ff,#a77bff,#ff7ac8,#ffcf5a);animation:glow 5s linear infinite;background-size:200% 100%}
+.cta::after{content:"";position:absolute;inset:auto 0 0;height:3px;border-radius:0 0 14px 14px;background:linear-gradient(90deg,#7cf29a,#41b6ff,#a77bff,#ff7ac8);background-size:200% 100%;animation:glow 5s linear infinite}
+@keyframes glow{to{background-position:200% 0}}
+.cta:disabled{opacity:.35;cursor:default}
+.cta:disabled::before,.cta:disabled::after{display:none}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:42px 0 8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:50px;padding:0 16px 0 10px;border-radius:14px;border:1px solid var(--line);background:#fff;font-weight:600;
+  box-shadow:0 3px 0 var(--line)}
+.chip .ic{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:17px}
+.chip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hint{text-align:center;font-weight:600;margin:6px 0 0}
+section.block{padding:clamp(48px,8vw,80px) 0 0}
+h2{font-size:clamp(26px,4vw,40px);font-weight:600;text-align:center;margin:0 0 28px;line-height:1.2}
+.steps3{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.tile{border-radius:var(--r);padding:20px;min-height:120px}
+.tile h3{margin:6px 0 4px;font-size:1.05em}
+.tile p{margin:0;font-size:.93em}
+.tile .big{font-size:2.3em;font-weight:700;line-height:1}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;min-height:56px;display:flex;align-items:center;justify-content:space-between;font-weight:600;gap:12px}
+.faq summary::after{content:"+";font-size:1.4em;color:var(--muted)}
+.faq details[open] summary::after{content:"–"}
+.faq p{margin:0 0 16px;color:#333}
+footer{border-top:1px solid var(--line);margin-top:64px;padding:28px 0 40px;text-align:center;color:var(--muted);font-size:.85em}
+
+/* ---- wizard ---- */
+.wtop{display:flex;align-items:center;gap:14px;height:60px;max-width:560px;margin:0 auto;padding:0 16px}
+.wtop .back{width:48px;height:48px;border:0;background:none;font-size:22px;display:grid;place-items:center;margin-inline-start:-12px}
+.wtop .bar{flex:1;height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.wtop .bar i{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .35s}
+.wtop .count{font-size:.85em;color:var(--muted);white-space:nowrap}
+.wbody{max-width:560px;margin:0 auto;padding:22px 16px 60px}
+.q{font-size:clamp(21px,3vw,26px);font-weight:600;margin:4px 0 20px;line-height:1.3}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:start;min-height:72px;padding:12px 14px;margin-bottom:12px;border-radius:16px;
+  border:1px solid var(--line);background:#fff;box-shadow:0 3px 0 var(--line)}
+.opt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.opt.sel{border-color:var(--blue);box-shadow:0 3px 0 var(--blue)}
+.opt .ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px}
+.opt b{display:block;font-weight:600}
+.opt small{display:block;color:var(--muted);font-size:.85em}
+.opt .n{margin-inline-start:auto;color:var(--muted);font-size:.85em}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:300px;border:1px solid #d4d4d4;border-radius:22px;
+  box-shadow:0 3px 0 #e2e2e2;cursor:pointer;text-align:center;padding:20px;position:relative}
+.drop.over{border-color:var(--blue);background:#f4f8ff}
+.drop .priv{position:absolute;bottom:16px;font-size:.8em;color:var(--muted)}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;border-radius:14px;border:1px solid var(--line);background:#fff;font-weight:600;
+  box-shadow:0 3px 0 var(--line);margin-top:12px;text-decoration:none}
+.btn.dark{background:#111;color:#fff;border-color:#111;box-shadow:0 3px 0 #000}
+.btn:disabled{opacity:.4;cursor:default}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;min-height:48px;width:100%}
+.found{background:var(--mint);color:var(--mint-i);border-radius:16px;padding:14px 16px;margin-top:14px;font-weight:500}
+.err{background:#fff1f0;color:#a8071a;border-radius:14px;padding:12px 14px;margin-top:12px}
+.guide{background:var(--soft);border-radius:16px;padding:14px 18px;margin-top:14px}
+.guide ol{margin:6px 0;padding-inline-start:1.2em}
+.guide li{margin:6px 0}
+.qchips{display:flex;flex-wrap:wrap;gap:8px}
+.qchip{min-height:46px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#fff;box-shadow:0 2px 0 var(--line)}
+.qchip.sel{background:#111;color:#fff;border-color:#111;box-shadow:0 2px 0 #000}
+textarea,input[type=email],input.code{width:100%;font:inherit;border:1px solid #d4d4d4;border-radius:14px;padding:14px;background:#fff;color:var(--ink)}
+textarea{min-height:96px;margin-top:14px;resize:vertical}
+input.code{font-size:28px;letter-spacing:10px;text-align:center;direction:ltr;font-weight:700}
+input:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+.small{font-size:.85em}
+
+/* ---- loading ---- */
+.loading{text-align:center;padding-top:clamp(40px,10vh,100px)}
+.rings{position:relative;display:inline-grid;place-items:center;width:200px;height:200px}
+.rings::before,.rings::after{content:"";position:absolute;inset:0;border-radius:50%;background:#e8efff;animation:pulse 2.2s ease-out infinite}
+.rings::after{animation-delay:1.1s}
+@keyframes pulse{0%{transform:scale(.45);opacity:1}100%{transform:scale(1);opacity:0}}
+.rings .bj{z-index:1}
+.lline{min-height:3.2em;font-size:1.1em;font-weight:500;margin:18px auto 0;max-width:22em;transition:opacity .3s}
+.lbar{height:6px;background:var(--soft);border-radius:99px;max-width:280px;margin:18px auto 0;overflow:hidden}
+.lbar i{display:block;height:100%;width:0;background:#111;border-radius:99px;transition:width 1s linear}
+
+/* ---- report ---- */
+.rhead{text-align:center;padding:30px 0 10px}
+.rhead .who{font-weight:600;font-size:1.05em;margin-top:14px}
+.rhead .ttl{font-size:clamp(24px,4vw,34px);font-weight:700;margin:2px 0 0;line-height:1.2}
+.demo-tag{display:inline-block;background:var(--yellow);color:var(--yellow-i);border-radius:99px;padding:2px 12px;font-size:.8em;font-weight:600;margin-top:10px}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0}
+.bento .tile{min-height:auto;padding:14px 16px;position:relative;overflow:hidden}
+.bento .wide{grid-column:1/-1}
+.tile .lab{font-size:.8em;font-weight:600;opacity:.85}
+.tile .val{font-size:clamp(26px,5vw,34px);font-weight:700;line-height:1.1;text-align:left;direction:ltr;margin-top:8px}
+.tile .val small{font-size:.5em;font-weight:600;margin-inline-start:4px}
+.mint{background:var(--mint);color:var(--mint-i)} .yellow{background:var(--yellow);color:var(--yellow-i)}
+.lav{background:var(--lav);color:var(--lav-i)} .peach{background:var(--peach);color:var(--peach-i)} .pink{background:var(--pink);color:var(--pink-i)}
+.donutrow{display:flex;align-items:center;gap:18px;margin-top:8px}
+.donutrow svg{flex:none;width:clamp(86px,22vw,110px);height:auto}
+.legend{list-style:none;margin:0;padding:0;font-weight:600}
+.legend li{display:flex;align-items:center;gap:8px;margin:4px 0}
+.legend .d{width:11px;height:11px;border-radius:50%;flex:none}
+.legend .p{direction:ltr;unicode-bidi:isolate;min-width:3.2em;text-align:end;font-size:1.15em}
+.rbars .row{display:grid;grid-template-columns:minmax(0,5.5em) 1fr auto;align-items:center;gap:8px;margin:8px 0;font-size:.85em;font-weight:600}
+.rbars .row span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rbars .tr{height:10px;border-radius:99px;background:rgba(255,255,255,.55);overflow:hidden}
+.rbars .tr i{display:block;height:100%;border-radius:99px}
+.hist{display:flex;align-items:flex-end;gap:2px;height:110px;direction:ltr;margin-top:10px}
+.hist i{flex:1;background:#b6a6f5;border-radius:3px 3px 0 0;min-height:3px}
+.hist i.pk{background:var(--lav-d)}
+.emo{font-size:clamp(26px,6vw,34px);letter-spacing:4px;margin-top:6px}
+.headline{font-size:clamp(21px,3.4vw,28px);font-weight:700;line-height:1.3;text-align:center;margin:30px 4px 8px}
+.score{display:flex;align-items:center;gap:16px;background:#111;color:#fff;border-radius:var(--r);padding:16px 18px;margin:18px 0}
+.score .num{font-size:44px;font-weight:800;line-height:1;direction:ltr}
+.score .num small{font-size:.4em;opacity:.6}
+.sec{border:1px solid var(--line);border-radius:var(--r);padding:20px 20px 8px;margin:14px 0;box-shadow:0 3px 0 var(--line)}
+.sec h3{display:flex;gap:10px;align-items:flex-start;font-size:1.12em;line-height:1.35;margin:0 0 10px}
+.sec h3 .e{flex:none}
+.sec p{margin:0 0 12px;color:#222}
+.q-quote{background:#f3f0ff;color:#2b1f6e;border-radius:6px;padding:0 4px;font-weight:500}
+.awards{display:grid;gap:10px;margin:14px 0}
+.award{border-radius:var(--r);padding:16px 18px}
+.award .t{font-weight:700}
+.award .w{font-size:1.2em;font-weight:700;margin:4px 0}
+.bottom{background:#111;color:#fff;border-radius:var(--r);padding:22px 20px;margin:18px 0}
+.bottom .lab{font-size:.8em;opacity:.7;font-weight:600;margin-bottom:6px}
+.bottom p{margin:0;font-size:1.08em;line-height:1.6}
+.share{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.share .btn{margin-top:0}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 18px;border-radius:12px;z-index:50;max-width:90vw;text-align:center}
+canvas#cardCanvas{display:none}
+@media print{.topbar,.share,.btn,.pill,footer{display:none !important}.sec,.tile{break-inside:avoid}}
 </style>
 </head>
 <body>
-<main>
 
 <noscript>
-  <div class="card err">
-    <strong>הדף נפתח בתצוגה מקדימה שלא מריצה אותו.</strong>
-    <p>פתחו את הקישור בכרום או בספארי (שלוש הנקודות ← "פתח בדפדפן"). הניתוח רץ בתוך הדפדפן ולכן צריך דפדפן אמיתי.</p>
-  </div>
+  <div style="padding:20px;background:#fff1f0;color:#a8071a;text-align:center">האתר צריך דפדפן אמיתי. פתחו את הקישור בכרום או בספארי (שלוש הנקודות ← "פתח בדפדפן").</div>
 </noscript>
 
-<header>
-  <h1>מה <span id="personaName">יוסי</span> חושב?</h1>
-  <p class="lead">שולחים לו צ'אט מוואטסאפ, והוא אומר לכם בלי לייפות מי יותר בעניין, מי תמיד פותח, ומי עונה אחרי שלוש שעות.</p>
-  <p class="small muted">🔒 הכול רץ אצלכם בטלפון. הצ'אט לא עולה לשום שרת.</p>
-</header>
+<!-- ================= LANDING ================= -->
+<div id="vLanding">
+  <header class="topbar"><div class="in">
+    <span class="bj" aria-label="בלאק ג'ק">😎</span>
+    <button class="pill" data-act="start">נסו עכשיו ←</button>
+  </div></header>
 
-<section class="card" id="start">
-  <h2>1. מביאים את הצ'אט</h2>
-  <label class="drop" id="drop" for="file">
-    <strong>📂 לבחור קובץ ייצוא</strong>
-    <span class="muted small">קובץ ‎.txt או ‎.zip שוואטסאפ יצר</span>
-  </label>
-  <input type="file" id="file" accept=".txt,.zip,text/plain,application/zip">
-  <div class="row" style="margin-top:12px">
-    <button id="demoBtn" type="button">🎲 לנסות על צ'אט לדוגמה</button>
-  </div>
-  <div id="error" class="err hidden"></div>
+  <main class="wrap">
+    <div class="hero">
+      <div class="cluster" aria-hidden="true">
+        <span style="background:#e6f9ec">💬</span>
+        <span style="background:#ece6ff">👵</span>
+        <span style="background:#f1e9ff">😂</span>
+        <span class="bj">😎</span>
+        <span style="background:#ffd1ea">💔</span>
+        <span style="background:#e6f9ec">💬</span>
+        <span style="background:#ffe9a8">💅</span>
+      </div>
+      <h1>שלחו צ'אט. בלאק ג'ק יגיד לכם את האמת.</h1>
+      <p class="sub">הוא קורא כל הודעה, סופר מי פותח ומי נעלם, וכותב לכם מה הוא באמת חושב על כל אחד שם.</p>
+      <button class="cta" data-act="start">נסו עכשיו ←</button>
 
-  <details style="margin-top:10px">
-    <summary>איך מייצאים צ'אט מוואטסאפ?</summary>
-    <h3>אנדרואיד</h3>
-    <ol class="how">
-      <li>פותחים את הצ'אט ← שלוש הנקודות למעלה ← עוד ← ייצוא צ'אט.</li>
-      <li>בוחרים <b>ללא מדיה</b>.</li>
-      <li>שומרים לקבצים (או שולחים לעצמכם), וחוזרים לכאן לבחור אותו.</li>
-    </ol>
-    <h3>אייפון</h3>
-    <ol class="how">
-      <li>פותחים את הצ'אט ← לוחצים על השם למעלה ← גוללים למטה ← ייצוא צ'אט.</li>
-      <li>בוחרים <b>ללא מדיה</b> ← "שמור בקבצים".</li>
-      <li>חוזרים לכאן ובוחרים את קובץ ה-zip. אין צורך לפתוח אותו.</li>
-    </ol>
-  </details>
-  <details>
-    <summary>או להדביק את הטקסט ישירות</summary>
-    <textarea id="paste" placeholder="מדביקים כאן את תוכן הקובץ…"></textarea>
-    <div class="row" style="margin-top:8px"><button id="pasteBtn" type="button">לנתח את הטקסט</button></div>
-  </details>
-</section>
-
-<div id="results" class="hidden">
-  <section class="card" id="overview"></section>
-  <section class="card" id="verdictCard"></section>
-  <section class="card" id="peopleCard"></section>
-  <section class="card" id="timeCard"></section>
-  <section class="card" id="wordsCard"></section>
-  <section class="card" id="recordsCard"></section>
-
-  <section class="card" id="aiCard">
-    <h2>🧠 הדוח המלא של {{persona}}</h2>
-    <p>{{persona}} קורא את השיחה עצמה וכותב דוח: מי יותר בעניין ולמה, דגלים אדומים וירוקים, בדיחות פנימיות, ציון לקשר ועצה לכל אחד.</p>
-    <div class="seg">
-      <label><input type="checkbox" id="anon"> להחליף שמות בכינויים</label>
+      <div class="chips">
+        <button class="chip" data-act="demo" data-demo="partner"><span class="ic" style="background:#e6f9ec">💬</span>איתי 💔</button>
+        <button class="chip" data-act="demo" data-demo="group"><span class="ic" style="background:#ffe1cf">🍻</span>החבר'ה</button>
+      </div>
+      <p class="hint">↑<br>הקישו על צ'אט כדי לראות דמו</p>
     </div>
-    <p class="small muted">לדוח הזה קטע מהשיחה נשלח לניתוח אצל Gemini של גוגל. אנחנו לא שומרים אותו. כל מה שמופיע למעלה חושב בטלפון ולא נשלח לשום מקום.</p>
-    <div class="row" style="margin-top:12px">
-      <button class="btn-primary" id="aiBtn" type="button">✨ לקבל את הדוח המלא</button>
-    </div>
-    <div id="aiOut" class="report hidden"></div>
-  </section>
 
-  <section class="card" id="shareCard">
-    <h2>📸 כרטיס לשיתוף</h2>
-    <p class="muted small">תמונה עם השורה התחתונה, בלי תוכן השיחה, לסטטוס או לחברים.</p>
-    <canvas id="cardCanvas" width="1080" height="1350"></canvas>
-    <div class="row">
-      <button class="btn-primary" id="shareImg" type="button">לשתף / לשמור תמונה</button>
-      <button id="again" type="button">צ'אט אחר</button>
-    </div>
-  </section>
+    <section class="block">
+      <h2>איך זה עובד</h2>
+      <div class="steps3">
+        <div class="tile mint"><div class="big">1</div><h3>מייצאים</h3><p>בוואטסאפ: הצ'אט ← ייצוא צ'אט ← ללא מדיה. לוקח חצי דקה.</p></div>
+        <div class="tile yellow"><div class="big">2</div><h3>מעלים</h3><p>בוחרים את הקובץ, ומספרים לבלאק ג'ק מי אתם ומה בא לכם לדעת.</p></div>
+        <div class="tile lav"><div class="big">3</div><h3>קוראים</h3><p>תוך דקה מקבלים דוח: מי בעניין, מה השתנה, ומה עושים עם זה.</p></div>
+      </div>
+    </section>
+
+    <section class="block faq">
+      <h2>שאלות</h2>
+      <details><summary>כמה זה עולה?</summary><p>כלום. אין תשלום, אין מנוי, ואין "שני סעיפים חינם והשאר בתשלום".</p></details>
+      <details><summary>מה קורה עם הצ'אט שלי?</summary><p>הסטטיסטיקה מחושבת בטלפון שלכם. כדי לכתוב את הדוח, קטע מהשיחה נשלח לשירות בינה מלאכותית (Gemini של גוגל, או Cloudflare כגיבוי) ולא נשמר אצלנו. נשמר רק הדוח המוגמר, למשך 30 יום, כדי שהלינק יעבוד, ואפשר למחוק אותו בלחיצה.</p></details>
+      <details><summary>איך מייצאים צ'אט?</summary><p><b>אייפון:</b> פותחים את הצ'אט ← לוחצים על השם למעלה ← ייצוא צ'אט ← ללא מדיה ← שמירה בקבצים.<br><b>אנדרואיד:</b> פותחים את הצ'אט ← ⋮ ← עוד ← ייצוא צ'אט ← ללא מדיה.</p></details>
+      <details><summary>זה עובד גם על קבוצות?</summary><p>כן. בקבוצה בלאק ג'ק מחלק פרסים: מי מחזיק את הקבוצה, מי רוח רפאים, מי מצחיק באמת.</p></details>
+      <details><summary>הוא באמת יודע מה הצד השני מרגיש?</summary><p>לא. הוא קורא דפוסים בכתיבה, לא מחשבות. הוא אומר את זה בעצמו כשמשהו לא ברור.</p></details>
+    </section>
+
+    <section class="block" style="text-align:center">
+      <h2>נו, איזה צ'אט שולחים?</h2>
+      <button class="cta" data-act="start">נסו עכשיו ←</button>
+    </section>
+  </main>
+  <footer><div class="wrap">🃏 בלאק ג'ק · ניתוח של דפוסי כתיבה, לא קריאת מחשבות<div class="ltr build" style="margin-top:8px"></div></div></footer>
 </div>
 
-<footer>
-  <div>זה ניתוח של דפוסי כתיבה, לא קריאת מחשבות. אנשים הם יותר מהצ'אט שלהם.</div>
-  <div class="ltr" id="build" style="margin-top:6px"></div>
-</footer>
-</main>
+<!-- ================= WIZARD ================= -->
+<div id="vWizard" class="hidden">
+  <header class="topbar"><div class="wtop">
+    <button class="back" data-act="back" aria-label="חזרה">→</button>
+    <div class="bar"><i id="wBar"></i></div>
+    <span class="count" id="wCount"></span>
+  </div></header>
+  <main class="wbody" id="wBody"></main>
+  <input type="file" id="file" accept=".txt,.zip,text/plain,application/zip">
+</div>
+
+<!-- ================= REPORT ================= -->
+<div id="vReport" class="hidden">
+  <header class="topbar"><div class="in">
+    <span class="bj">😎</span>
+    <button class="pill" data-act="start">צ'אט חדש ←</button>
+  </div></header>
+  <main class="wrap" id="rBody"></main>
+  <footer><div class="wrap">🃏 בלאק ג'ק · ניתוח של דפוסי כתיבה, לא קריאת מחשבות<div class="ltr build" style="margin-top:8px"></div></div></footer>
+</div>
+
+<canvas id="cardCanvas" width="1080" height="1350"></canvas>
 
 <script>
 "use strict";
-const BUILD = "2026-10-24 21:27 v2 ai-report";
-const API_URL = "/api/report";
-const PROMPT_BUDGET = 60000;      // characters of chat sent for the AI report
-const PERSONA = "יוסי";
+const BUILD = "2026-10-25 v3 blackjack";
+const PERSONA = "בלאק ג'ק";
 const SESSION_GAP = 4 * 3600e3;   // a gap this long starts a new conversation
 const CHASE_GAP = 20 * 60e3;      // sending again after this long with no reply counts as chasing
-const COLORS = ["--a","--b","--c","--d","--e"];
-
-document.getElementById("build").textContent = BUILD;
-document.getElementById("personaName").textContent = PERSONA;
-document.querySelectorAll("#aiCard h2, #aiCard p").forEach(p => p.innerHTML = p.innerHTML.replaceAll("{{persona}}", PERSONA));
+const LINES_BUDGET = 80000;       // characters of chat sent for the report; the server trims per model
+const PCOL = ["--p0","--p1","--p2","--p3","--p4","--p5"];
 
 const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const col = i => `var(${COLORS[i % COLORS.length]})`;
-const colHex = i => getComputedStyle(document.documentElement).getPropertyValue(COLORS[i % COLORS.length]).trim();
-const pct = x => Math.round(x * 100);
-const num = n => n.toLocaleString("he-IL");
-const nm = s => `<bdi>${esc(s)}</bdi>`;
-
-function dur(ms){
-  if (ms == null || !isFinite(ms)) return "—";
-  const m = ms / 60e3;
-  if (m < 1) return "פחות מדקה";
-  if (m < 60) return Math.round(m) + " דק'";
-  const h = m / 60;
-  if (h < 48) return (h < 10 ? h.toFixed(1).replace(/\.0$/,"") : Math.round(h)) + " שע'";
-  return Math.round(h / 24) + " ימים";
-}
-const fmtDate = d => d.toLocaleDateString("he-IL", {day:"numeric", month:"short", year:"numeric"});
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num = n => Number(n || 0).toLocaleString("en-US");
+const pct = x => Math.round((x || 0) * 100);
+const pc = i => `var(${PCOL[i % PCOL.length]})`;
+document.querySelectorAll(".build").forEach(el => el.textContent = BUILD);
 
 function toast(msg){
   const t = document.createElement("div");
   t.className = "toast"; t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2600);
+  setTimeout(() => t.remove(), 2800);
+}
+function durShort(ms){
+  if (ms == null || !isFinite(ms)) return {v:"—", u:""};
+  const m = ms / 60e3;
+  if (m < 1) return {v:"<1", u:"min"};
+  if (m < 60) return {v:String(Math.round(m)), u:"min"};
+  const h = m / 60;
+  if (h < 48) return {v:h < 10 ? h.toFixed(1).replace(/\.0$/, "") : String(Math.round(h)), u:"h"};
+  return {v:String(Math.round(h / 24)), u:"ימים"};
+}
+function durHe(ms){
+  if (ms == null || !isFinite(ms)) return "—";
+  const m = ms / 60e3;
+  if (m < 1) return "פחות מדקה";
+  if (m < 60) return Math.round(m) + " דק'";
+  const h = m / 60;
+  if (h < 48) return (h < 10 ? h.toFixed(1).replace(/\.0$/, "") : Math.round(h)) + " שעות";
+  return Math.round(h / 24) + " ימים";
 }
 
-/* ---------- reading files ---------- */
+/* =================== reading files =================== */
 
 async function readZip(buf){
   const dv = new DataView(buf), u8 = new Uint8Array(buf);
@@ -234,8 +326,7 @@ async function readZip(buf){
   const entries = [];
   for (let k = 0; k < count; k++){
     if (dv.getUint32(p, true) !== 0x02014b50) break;
-    const method = dv.getUint16(p + 10, true);
-    const csize = dv.getUint32(p + 20, true);
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
     const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
     const off = dv.getUint32(p + 42, true);
     const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nlen));
@@ -255,32 +346,13 @@ async function readZip(buf){
   return await new Response(stream).text();
 }
 
-async function handleFile(file){
-  showError("");
-  try {
-    const buf = await file.arrayBuffer();
-    const u8 = new Uint8Array(buf);
-    const isZip = u8[0] === 0x50 && u8[1] === 0x4b;
-    const text = isZip ? await readZip(buf) : new TextDecoder().decode(buf);
-    const title = file.name.replace(/\.(txt|zip)$/i, "").replace(/^WhatsApp Chat( with| - )?\s*/i, "").replace(/^צ'?אט WhatsApp עם\s*/,"");
-    run(text, title);
-  } catch (err){
-    showError(err.message || String(err));
-  }
-}
-
-function showError(msg){
-  const el = $("error");
-  el.textContent = msg;
-  el.classList.toggle("hidden", !msg);
-}
-
-/* ---------- parsing ---------- */
+/* =================== parsing =================== */
 
 const INVIS = /[‎‏‪-‮⁦-⁩﻿]/g;
 const RX_IOS = /^\[(\d{1,4})[.\/-](\d{1,2})[.\/-](\d{2,4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp]\.?\s?[Mm]\.?)?\]\s?(.*)$/;
 const RX_AND = /^(\d{1,4})[.\/-](\d{1,2})[.\/-](\d{2,4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp]\.?\s?[Mm]\.?)?\s*[-–]\s(.*)$/;
 const RX_MEDIA = /^<[^>]*(omitted|הושמט|לא נכלל|נכללה)[^>]*>$|^(image|video|audio|sticker|GIF|document|Contact card) omitted$|^(תמונה|סרטון|שמע|קובץ שמע|מדבקה|GIF|מסמך|כרטיס איש קשר) (הושמט|הושמטה)$|\((file attached|קובץ מצורף)\)$/i;
+const RX_AUDIO = /^(audio omitted|(קובץ )?שמע הושמט)$|PTT-.*\.opus|\.opus \(/i;
 const RX_DELETED = /^(This message was deleted|You deleted this message|ההודעה נמחקה|מחקת את ההודעה הזו|ההודעה הזו נמחקה)\.?$/i;
 const RX_EDITED = /\s*<(This message was edited|ההודעה נערכה|הודעה זו נערכה)>\s*$/i;
 const RX_SYSTEM = /end-to-end|מוצפנות מקצה|created group|יצר(ה)? את הקבוצה|added|הוסיפ?(ה)?|left$|יצא(ה)?$|changed (the|this|their)|שינ(ה|תה)|joined|הצטרפ|security code|קוד האבטחה|Missed (voice|video) call|שיחה (קולית|וידאו) שלא נענתה|disappearing messages|הודעות זמניות|pinned a message|הצמיד/i;
@@ -321,10 +393,10 @@ function parseChat(text){
 
     const i = r.rest.indexOf(": ");
     if (i <= 0 || i > 60) continue;              // no "Name: " → system line
-    let sender = r.rest.slice(0, i).replace(/^~\s*/, "").trim();
-    let body = r.rest.slice(i + 2).replace(INVIS, "").replace(RX_EDITED, "").trim();
+    const sender = r.rest.slice(0, i).replace(/^~\s*/, "").trim();
+    const body = r.rest.slice(i + 2).replace(INVIS, "").replace(RX_EDITED, "").trim();
     if (!sender) continue;
-    if (RX_MEDIA.test(body)){ msgs.push({t, sender, text:"", media:true}); media++; continue; }
+    if (RX_MEDIA.test(body)){ msgs.push({t, sender, text:"", media:true, audio:RX_AUDIO.test(body)}); media++; continue; }
     if (RX_DELETED.test(body)){ deleted++; continue; }
     if (r.sysMark && RX_SYSTEM.test(body) && body.length < 140) continue;
     if (/end-to-end|מוצפנות מקצה לקצה/.test(body) && body.length < 200) continue;
@@ -334,10 +406,8 @@ function parseChat(text){
   return {msgs, media, deleted};
 }
 
-/* ---------- analysis ---------- */
+/* =================== analysis =================== */
 
-const STOP = new Set(("את של על זה לא כן אני אתה הוא היא אנחנו הם הן מה מי איך למה יש אין גם רק עם אבל או אם כי כל היה הייתה היו זאת הזה הזאת זו לי לך לו לה לנו לכם להם שלי שלך שלו שלה שלנו אז עוד כבר פה שם אחד אחת טוב ממש סתם נו אוקי אוק עכשיו היום מחר אתמול אותו אותה אותך אותי בסדר יותר הכי מאוד איזה כמו אחרי לפני עד אצל בין וזה שזה אה אהה אהם יאללה כאילו אולי צריך רוצה יודע יודעת חושב חושבת בא באה נראה שיש שאני שאתה שהוא שהיא אבל הייתי היית תודה ואני ואז זהו עדיין בכלל פשוט לגמרי מתי איפה כמה הנה דרך " +
-  "the a an and or but is are was were be to of in on at for with it this that i you he she we they me my your so do did not no yes ok okay just like what when where how why have has had im its it's i'm dont don't can will would get got").split(/\s+/));
 const RX_LAUGH = /(ח{3,}|חח|haha|hehe|lol|lmao|😂|🤣|😆)/i;
 const RX_LOVE = /(❤|♥|😍|🥰|😘|💕|💖|💗|😻|אוהב|אוהבת|מתגעגע|מתגעגעת|love you|miss you)/i;
 const seg = (typeof Intl !== "undefined" && Intl.Segmenter) ? new Intl.Segmenter(undefined, {granularity:"grapheme"}) : null;
@@ -355,506 +425,532 @@ function analyze(parsed){
   const {msgs} = parsed;
   const P = new Map();
   const get = s => {
-    if (!P.has(s)) P.set(s, {name:s, msgs:0, words:0, chars:0, media:0, init:0, ends:0, replies:[], questions:0, laughs:0, love:0, chase:0, night:0, emoji:new Map(), vocab:new Map(), longest:""});
+    if (!P.has(s)) P.set(s, {name:s, msgs:0, words:0, media:0, audio:0, init:0, replies:[], questions:0, laughs:0, love:0, chase:0, night:0, emoji:new Map()});
     return P.get(s);
   };
-  const hours = new Array(24).fill(0), week = new Array(7).fill(0);
-  const days = new Map(), months = new Map();
-  let longestGap = {ms:0, at:null};
+  const hours = new Array(24).fill(0), days = new Set(), allEmoji = new Map();
+  let longestGap = {ms:0, back:null}, night = 0;
 
   for (let k = 0; k < msgs.length; k++){
     const m = msgs[k], p = get(m.sender), prev = msgs[k - 1];
     p.msgs++;
-    hours[m.t.getHours()]++; week[m.t.getDay()]++;
-    const dk = dayKey(m.t); days.set(dk, (days.get(dk) || 0) + 1);
-    const mk = dk.slice(0, 7); months.set(mk, (months.get(mk) || 0) + 1);
-    if (m.t.getHours() < 5) p.night++;
-
+    hours[m.t.getHours()]++;
+    days.add(dayKey(m.t));
+    if (m.t.getHours() < 5){ p.night++; night++; }
     const gap = prev ? m.t - prev.t : Infinity;
-    if (!prev || gap >= SESSION_GAP){
-      p.init++;
-      if (prev) get(prev.sender).ends++;
-    } else if (prev.sender !== m.sender){
-      p.replies.push(gap);
-    } else if (gap >= CHASE_GAP){
-      p.chase++;
-    }
-    if (prev && gap > longestGap.ms && gap !== Infinity) longestGap = {ms:gap, at:prev.t, back:m.sender};
-
-    if (m.media){ p.media++; continue; }
+    if (!prev || gap >= SESSION_GAP) p.init++;
+    else if (prev.sender !== m.sender) p.replies.push(gap);
+    else if (gap >= CHASE_GAP) p.chase++;
+    if (prev && gap > longestGap.ms) longestGap = {ms:gap, back:m.sender};
+    if (m.media){ p.media++; if (m.audio) p.audio++; continue; }
     const tx = m.text;
-    const words = tx.toLowerCase().split(/[^\p{L}\p{N}'"]+/u).filter(Boolean);
-    p.words += words.length; p.chars += tx.length;
-    if (tx.length > p.longest.length) p.longest = tx;
+    p.words += tx.split(/\s+/).filter(Boolean).length;
     if (tx.includes("?")) p.questions++;
     if (RX_LAUGH.test(tx)) p.laughs++;
     if (RX_LOVE.test(tx)) p.love++;
-    for (const e of emojis(tx)) p.emoji.set(e, (p.emoji.get(e) || 0) + 1);
-    for (let w of words){
-      w = w.replace(/^['"]+|['"]+$/g, "");
-      if (w.length < 2 || STOP.has(w) || /^\d+$/.test(w) || /^ח+$/.test(w) || /^(ha)+h?$/.test(w)) continue;
-      p.vocab.set(w, (p.vocab.get(w) || 0) + 1);
-    }
+    for (const e of emojis(tx)){ p.emoji.set(e, (p.emoji.get(e) || 0) + 1); allEmoji.set(e, (allEmoji.get(e) || 0) + 1); }
   }
-  if (msgs.length) get(msgs[msgs.length - 1].sender).ends++;
-
   const people = [...P.values()].sort((a, b) => b.msgs - a.msgs);
-  for (const p of people){
-    p.medReply = median(p.replies);
-    p.avgWords = p.msgs - p.media ? p.words / (p.msgs - p.media) : 0;
-  }
+  for (const p of people) p.medReply = median(p.replies);
+  return {people, total:msgs.length, first:msgs[0]?.t, last:msgs[msgs.length - 1]?.t, activeDays:days.size, hours, longestGap, allEmoji, night};
+}
 
-  // streak and busiest day
-  const dkeys = [...days.keys()].sort();
-  let best = 0, cur = 0, prevD = null, streakEnd = null;
-  for (const k of dkeys){
-    const d = new Date(k + "T12:00:00");
-    cur = prevD && (d - prevD) < 1.5 * 864e5 ? cur + 1 : 1;
-    if (cur > best){ best = cur; streakEnd = d; }
-    prevD = d;
-  }
-  let busiest = null;
-  for (const [k, v] of days) if (!busiest || v > busiest.v) busiest = {k, v};
-
-  // trend: messages per day in the last quarter of the timeline vs the rest
-  let trend = null;
-  if (msgs.length > 40){
-    const t0 = msgs[0].t.getTime(), t1 = msgs[msgs.length - 1].t.getTime(), span = t1 - t0;
-    if (span > 21 * 864e5){
-      const cut = t1 - span / 4;
-      const late = msgs.filter(m => m.t >= cut).length / (span / 4);
-      const early = msgs.filter(m => m.t < cut).length / (span * 3 / 4);
-      if (early > 0) trend = late / early - 1;
-    }
-  }
-
-  const allEmoji = new Map();
-  for (const p of people) for (const [e, c] of p.emoji) allEmoji.set(e, (allEmoji.get(e) || 0) + c);
-
+// The small object that is stored with the report and drawn on the report page
+function compactStats(st, me){
+  const top = [...st.allEmoji.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
+  const totalInit = st.people.reduce((a, p) => a + p.init, 0) || 1;
+  const opener = [...st.people].sort((a, b) => b.init - a.init)[0];
   return {
-    people, total:msgs.length, first:msgs[0]?.t, last:msgs[msgs.length - 1]?.t,
-    activeDays:days.size, hours, week, months, streak:best, streakEnd, busiest, longestGap,
-    trend, allEmoji, media:parsed.media, deleted:parsed.deleted
+    total: st.total, days: Math.max(1, Math.round((st.last - st.first) / 864e5) + 1), activeDays: st.activeDays,
+    first: +st.first, last: +st.last, me: me || null,
+    people: st.people.slice(0, 8).map(p => ({n:p.name, m:p.msgs, i:p.init, r:p.medReply, a:p.audio, q:p.questions, l:p.laughs, c:p.chase, nt:p.night})),
+    others: Math.max(0, st.people.length - 8), othersMsgs: st.people.slice(8).reduce((a, p) => a + p.msgs, 0),
+    opener: {n:opener.name, p:opener.init / totalInit},
+    night: st.night / st.total, hours: st.hours, emoji: top,
+    audio: st.people.reduce((a, p) => a + p.audio, 0),
+    silence: {ms:st.longestGap.ms, back:st.longestGap.back},
   };
 }
 
-/* ---------- interest score & verdict ---------- */
-
-const share = (x, y) => (x + y) ? x / (x + y) : .5;
-function interest(A, B){
-  const speedA = (A.medReply != null && B.medReply != null) ? share(B.medReply, A.medReply) : .5;
-  const s = .20 * share(A.msgs, B.msgs) + .25 * share(A.init, B.init) + .20 * speedA +
-            .15 * share(A.questions, B.questions) + .10 * share(A.chase, B.chase) + .10 * share(A.words, B.words);
-  return s;
+function statsText(st){
+  const rows = st.people.slice(0, 15).map(p =>
+    `- ${p.name}: ${p.msgs} הודעות (${pct(p.msgs / st.total)}%), פתח/ה ${p.init} שיחות, זמן תגובה חציוני ${durHe(p.medReply)}, ${p.questions} שאלות, ${p.laughs} צחוקים, ${p.chase} פעמים שלח/ה עוד הודעה בלי לקבל תשובה, ${p.night} הודעות בין חצות לחמש, ${p.audio} הודעות קוליות`);
+  return rows.join("\n") + `\n- סך הכול ${st.total} הודעות לאורך ${Math.round((st.last - st.first) / 864e5) + 1} ימים. השקט הכי ארוך: ${durHe(st.longestGap.ms)}.`;
 }
 
-function verdict2(st){
-  const [A, B] = st.people;
-  const sA = interest(A, B);
-  const lead = sA >= .5 ? A : B, other = lead === A ? B : A;
-  const gap = Math.abs(sA - .5) * 2;
-  const lines = [];
-  if (gap < .08) lines.push(`${nm(A.name)} ו${nm(B.name)} באותו גובה בדיוק. משעמם לנתח, בריא לחיות.`);
-  else if (gap < .25) lines.push(`${nm(lead.name)} קצת יותר בעניין. לא דרמה, אבל זה ניכר.`);
-  else lines.push(`בואו נגיד את זה בפשטות: ${nm(lead.name)} רוצה את זה הרבה יותר מ${nm(other.name)}.`);
-
-  const tot = A.init + B.init;
-  if (tot >= 4){
-    const ip = A.init / tot, opener = ip >= .5 ? A : B, op = Math.max(ip, 1 - ip);
-    if (op >= .68) lines.push(`${nm(opener.name)} פותח/ת ${pct(op)}% מהשיחות. ${nm(opener === A ? B.name : A.name)} כנראה מחכה שהטלפון יתחיל לבד.`);
-    else if (op <= .56) lines.push(`פתיחת שיחות מתחלקת יפה, ${pct(A.init / tot)}% מול ${pct(B.init / tot)}%. אף אחד פה לא סוחב לבד.`);
-  }
-  if (A.medReply != null && B.medReply != null){
-    const slow = A.medReply > B.medReply ? A : B, fast = slow === A ? B : A;
-    if (slow.medReply > 10 * 60e3 && slow.medReply > 3 * fast.medReply)
-      lines.push(`${nm(fast.name)} עונה תוך ${dur(fast.medReply)}, ו${nm(slow.name)} תוך ${dur(slow.medReply)}. מישהו פה משחק אותה עסוק/ה.`);
-    else if (Math.max(A.medReply, B.medReply) < 4 * 60e3)
-      lines.push(`שניכם עונים תוך דקות. או שאתם בעניין, או שאין לכם עבודה.`);
-  }
-  const ch = A.chase >= B.chase ? A : B, chO = ch === A ? B : A;
-  if (ch.chase >= 5 && ch.chase >= 2 * Math.max(1, chO.chase))
-    lines.push(`${nm(ch.name)} שלח/ה עוד הודעה בלי לקבל תשובה ${num(ch.chase)} פעמים. אנחנו רואים אותך.`);
-  if (A.avgWords && B.avgWords){
-    const lo = A.avgWords < B.avgWords ? A : B, hi = lo === A ? B : A;
-    if (hi.avgWords > 1.8 * lo.avgWords && hi.avgWords > 6)
-      lines.push(`${nm(hi.name)} כותב/ת מגילות, בממוצע ${Math.round(hi.avgWords)} מילים להודעה. ${nm(lo.name)} מסתפק/ת ב-${Math.max(1, Math.round(lo.avgWords))}.`);
-  }
-  const qt = A.questions + B.questions;
-  if (qt >= 10){
-    const q = A.questions / qt, asker = q >= .5 ? A : B, qp = Math.max(q, 1 - q);
-    if (qp >= .66) lines.push(`${pct(qp)}% מהשאלות בשיחה באות מ${nm(asker.name)}. ${nm(asker === A ? B.name : A.name)}, לשאול בחזרה זה ממש בסדר.`);
-  }
-  const lt = A.laughs + B.laughs;
-  if (lt >= 10){
-    const l = A.laughs >= B.laughs ? A : B;
-    lines.push(`${nm(l.name)} צחק/ה ב-${num(l.laughs)} הודעות. צחוק אמיתי או צחוק מנומס? את זה אפילו ${PERSONA} לא יודע.`);
-  }
-  const lv = A.love + B.love;
-  if (lv >= 8){
-    const l = A.love >= B.love ? A : B, lp = l.love / lv;
-    if (lp >= .7) lines.push(`${pct(lp)}% מהלבבות וה"מתגעגע/ת" באים מ${nm(l.name)}. רק אומר.`);
-    else lines.push(`הלבבות מתחלקים די שווה. חמוד, אפילו ל${PERSONA}.`);
-  }
-  if (st.trend != null){
-    if (st.trend <= -.35) lines.push(`בתקופה האחרונה כמות ההודעות ירדה ב-${pct(-st.trend)}%. או שנפגשים יותר, או שמשהו מתקרר.`);
-    else if (st.trend >= .4) lines.push(`בתקופה האחרונה כמות ההודעות עלתה ב-${pct(st.trend)}%. משהו פה מתחמם.`);
-  }
-  const nt = A.night + B.night;
-  if (nt >= 15){
-    const n = A.night >= B.night ? A : B;
-    lines.push(`${num(nt)} הודעות נשלחו בין חצות לחמש בבוקר, רובן מ${nm(n.name)}. בשעות האלה לא כותבים סתם.`);
-  }
-  return {lines, score:sA};
+function chatLines(parsed){
+  const fmt = m => `${m.t.getDate()}/${m.t.getMonth() + 1}/${String(m.t.getFullYear()).slice(2)} ${String(m.t.getHours()).padStart(2, "0")}:${String(m.t.getMinutes()).padStart(2, "0")} ${m.sender}: ${m.media ? (m.audio ? "[הודעה קולית]" : "[מדיה]") : m.text.replace(/\n+/g, " / ").slice(0, 600)}`;
+  const all = parsed.msgs.map(fmt);
+  let total = 0;
+  for (const l of all) total += l.length + 1;
+  if (total <= LINES_BUDGET) return all;
+  const head = [], tail = [];
+  let used = 0;
+  for (const l of all){ if (used + l.length > LINES_BUDGET * .2) break; head.push(l); used += l.length + 1; }
+  for (let i = all.length - 1; i >= head.length; i--){ if (used + all[i].length > LINES_BUDGET) break; tail.unshift(all[i]); used += all[i].length + 1; }
+  return head.concat(tail);
 }
 
-function verdictGroup(st){
-  const ps = st.people.filter(p => p.msgs >= 3);
-  const lines = [];
-  const top = ps[0], low = ps[ps.length - 1];
-  lines.push(`🚂 <b>המנוע של הקבוצה:</b> ${nm(top.name)}, עם ${pct(top.msgs / st.total)}% מכל ההודעות. בלעדיו/ה זו קבוצה של מדבקות.`);
-  if (ps.length > 2) lines.push(`👻 <b>רוח רפאים:</b> ${nm(low.name)}, עם ${num(low.msgs)} הודעות בסך הכול. קורא/ת הכול, אומר/ת כלום.`);
-  const opener = [...ps].sort((a, b) => b.init - a.init)[0];
-  if (opener.init >= 3) lines.push(`📣 <b>מעיר/ה את הקבוצה:</b> ${nm(opener.name)} פתח/ה ${num(opener.init)} שיחות אחרי שקט.`);
-  const fast = ps.filter(p => p.replies.length >= 5).sort((a, b) => a.medReply - b.medReply)[0];
-  if (fast) lines.push(`⚡ <b>הכי מהיר/ה:</b> ${nm(fast.name)}, עונה בדרך כלל תוך ${dur(fast.medReply)}.`);
-  const writer = [...ps].sort((a, b) => b.avgWords - a.avgWords)[0];
-  if (writer.avgWords > 8) lines.push(`📜 <b>כותב/ת המגילות:</b> ${nm(writer.name)}, בממוצע ${Math.round(writer.avgWords)} מילים להודעה.`);
-  const owl = [...ps].sort((a, b) => b.night / b.msgs - a.night / a.msgs)[0];
-  if (owl.night >= 5) lines.push(`🦉 <b>הינשוף:</b> ${nm(owl.name)}, ${num(owl.night)} הודעות בין חצות לחמש.`);
-  const em = [...ps].map(p => ({p, n:[...p.emoji.values()].reduce((a, b) => a + b, 0)})).sort((a, b) => b.n - a.n)[0];
-  if (em && em.n >= 10) lines.push(`🎭 <b>מלך/ת האימוג'י:</b> ${nm(em.p.name)}, עם ${num(em.n)} אימוג'ים.`);
-  const laugh = [...ps].sort((a, b) => b.laughs - a.laughs)[0];
-  if (laugh.laughs >= 5) lines.push(`😂 <b>הקהל הכי טוב:</b> ${nm(laugh.name)}, צחק/ה ב-${num(laugh.laughs)} הודעות.`);
-  return {lines};
-}
+/* =================== views =================== */
 
-/* ---------- rendering ---------- */
-
-let STATE = null;
-
-function run(text, title){
-  const parsed = parseChat(text);
-  if (!parsed || parsed.msgs.length < 5){
-    showError("לא הצלחתי לזהות פה צ'אט של וואטסאפ. ודאו שבחרתם את הקובץ שוואטסאפ יצר בייצוא (txt או zip).");
-    return;
-  }
-  const st = analyze(parsed);
-  if (st.people.length < 2){ showError("מצאתי רק משתתף אחד בשיחה. צריך לפחות שניים כדי שיהיה מה לנתח."); return; }
-  STATE = {parsed, st, title: title || st.people.slice(0, 2).map(p => p.name).join(" ו")};
-  render();
-  $("start").classList.add("hidden");
-  $("results").classList.remove("hidden");
+function show(view){
+  for (const v of ["vLanding", "vWizard", "vReport"]) $(v).classList.toggle("hidden", v !== view);
   window.scrollTo({top:0});
 }
 
-function render(){
-  const {st, title} = STATE;
-  const duo = st.people.length === 2;
-  const days = Math.max(1, Math.round((st.last - st.first) / 864e5));
+let CONFIG = {email:false};
+fetch("/api/config").then(r => r.json()).then(c => CONFIG = c).catch(() => {});
 
-  $("overview").innerHTML = `
-    <h2>💬 ${esc(title)}</h2>
-    <p class="muted small">${fmtDate(st.first)} – ${fmtDate(st.last)}</p>
-    <div class="stats">
-      <div class="stat"><b class="ltr">${num(st.total)}</b>הודעות</div>
-      <div class="stat"><b class="ltr">${num(st.people.length)}</b>משתתפים</div>
-      <div class="stat"><b class="ltr">${num(days)}</b>ימים</div>
-      <div class="stat"><b class="ltr">${num(Math.round(st.total / Math.max(1, st.activeDays)))}</b>הודעות ביום פעיל</div>
-    </div>`;
+/* =================== wizard =================== */
 
-  let vHtml = `<h2>🎤 ${PERSONA} אומר</h2>`;
-  if (duo){
-    const v = verdict2(st), [A, B] = st.people;
-    const a = pct(v.score), b = 100 - a;
-    vHtml += `<p class="small muted">מד ההשקעה: מי פותח, מי עונה מהר, מי שואל, מי רודף.</p>
-      <div class="meter"><div style="width:${a}%;background:${col(0)}">${a >= 18 ? a + "%" : ""}</div><div style="width:${b}%;background:${col(1)}">${b >= 18 ? b + "%" : ""}</div></div>
-      <div class="row small" style="justify-content:space-between"><span><span class="dot" style="background:${col(0)}"></span>${nm(A.name)}</span><span><span class="dot" style="background:${col(1)}"></span>${nm(B.name)}</span></div>
-      <ul class="verdict">${v.lines.map(l => `<li>${l}</li>`).join("")}</ul>`;
-    STATE.headline = v.lines[0].replace(/<[^>]+>/g, "");
-    STATE.score = v.score;
-  } else {
-    const v = verdictGroup(st);
-    vHtml += `<ul class="verdict">${v.lines.map(l => `<li>${l}</li>`).join("")}</ul>`;
-    STATE.headline = v.lines[0].replace(/<[^>]+>/g, "");
-  }
-  $("verdictCard").innerHTML = vHtml;
+const CONTEXTS = [
+  {k:"partner", e:"💌", bg:"#ffd1ea", t:"זוגיות", s:"בן/בת זוג, משהו לא מוגדר, אקס…"},
+  {k:"group", e:"😂", bg:"#ffe9a8", t:"קבוצת חברים", s:"החבר'ה מהצבא, קבוצת טיול, הכדורגל של שלישי…"},
+  {k:"friend", e:"🫶", bg:"#c9f3e2", t:"חבר או חברה", s:"הבסטי, חברים מהילדות, מהעבודה…"},
+  {k:"family", e:"🏠", bg:"#ffd9c6", t:"משפחה", s:"קבוצת המשפחה, אמא, אחים…"},
+  {k:"work", e:"📋", bg:"#cfdcff", t:"עבודה / צוות", s:"הצוות, קולגות, הבוס…"},
+  {k:"other", e:"🤷", bg:"#e6defe", t:"אחר", s:"שותפים לדירה, ועד בית, כל דבר אחר…"},
+];
+const QUESTIONS = {
+  partner: ["זה באמת בעניין?", "מי משקיע יותר?", "למה אנחנו רבים?", "לאן זה הולך?"],
+  group: ["מי הכי מצחיק?", "מי נעלם?", "מי מחזיק את הקבוצה?", "מה הבדיחה הפנימית שלנו?"],
+  friend: ["מי משקיע יותר?", "החברות התקררה?", "מה הבדיחות הפנימיות שלנו?"],
+  family: ["מי הכי פעיל?", "מי כותב רק כשצריך משהו?", "מה באמת קורה בקבוצה?"],
+  work: ["מי עושה את העבודה באמת?", "מי כותב בשעות מוזרות?", "איך האווירה בצוות?"],
+  other: ["מה באמת קורה פה?", "מי משקיע יותר?"],
+};
+const W = {};
+function resetWizard(){ Object.assign(W, {step:1, context:null, phone:null, parsed:null, st:null, title:"", me:undefined, qs:new Set(), qtext:"", email:"", token:null, codeSent:false, err:""}); }
+resetWizard();
 
-  const shown = st.people.slice(0, 12);
-  const maxMsgs = shown[0].msgs;
-  $("peopleCard").innerHTML = `
-    <h2>👥 מי כמה</h2>
-    <div class="bars">${shown.map((p, i) => `
-      <div class="bar"><div class="lbl"><span>${nm(p.name)}</span><span class="ltr">${num(p.msgs)} · ${pct(p.msgs / st.total)}%</span></div>
-      <div class="track"><div class="fill" style="width:${(p.msgs / maxMsgs * 100).toFixed(1)}%;background:${col(i)}"></div></div></div>`).join("")}
-    </div>
-    <h3>הפירוט</h3>
-    <div class="scroll"><table>
-      <thead><tr><th>מי</th><th>הודעות</th><th>מילים להודעה</th><th>פתח/ה שיחות</th><th>זמן תגובה רגיל</th><th>שאלות</th><th>צחוקים</th><th>עוד הודעה בלי תשובה</th><th>מדיה</th></tr></thead>
-      <tbody>${shown.map(p => `<tr><td>${nm(p.name)}</td><td class="n">${num(p.msgs)}</td><td class="n">${p.avgWords.toFixed(1)}</td><td class="n">${num(p.init)}</td><td>${dur(p.medReply)}</td><td class="n">${num(p.questions)}</td><td class="n">${num(p.laughs)}</td><td class="n">${num(p.chase)}</td><td class="n">${num(p.media)}</td></tr>`).join("")}</tbody>
-    </table></div>
-    ${st.people.length > 12 ? `<p class="small muted">ועוד ${st.people.length - 12} משתתפים.</p>` : ""}`;
-
-  const hmax = Math.max(...st.hours, 1);
-  const peakH = st.hours.indexOf(Math.max(...st.hours));
-  const wnames = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
-  const wmax = Math.max(...st.week, 1);
-  const mk = [...st.months.keys()].sort();
-  const allMonths = [];
-  if (mk.length){
-    let [y, m] = mk[0].split("-").map(Number);
-    const [ly, lm] = mk[mk.length - 1].split("-").map(Number);
-    while (y < ly || (y === ly && m <= lm)){ allMonths.push(`${y}-${String(m).padStart(2, "0")}`); m++; if (m > 12){ m = 1; y++; } }
-  }
-  const mmax = Math.max(...allMonths.map(k => st.months.get(k) || 0), 1);
-  const bw = 100 / Math.max(1, allMonths.length);
-  const svg = `<svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%;height:120px;display:block;direction:ltr" role="img" aria-label="הודעות לפי חודש">
-      ${allMonths.map((k, i) => { const v = st.months.get(k) || 0, h = v / mmax * 38; return `<rect x="${(i * bw + bw * .1).toFixed(2)}" y="${(40 - h).toFixed(2)}" width="${(bw * .8).toFixed(2)}" height="${h.toFixed(2)}" rx=".6" fill="var(--accent)"><title>${k}: ${v}</title></rect>`; }).join("")}
-    </svg>`;
-  $("timeCard").innerHTML = `
-    <h2>🕐 מתי מדברים</h2>
-    <p>השעה הכי חמה: <b class="ltr">${String(peakH).padStart(2, "0")}:00</b></p>
-    <div class="hours" aria-label="הודעות לפי שעה">${st.hours.map(v => `<div style="height:${Math.max(2, v / hmax * 100)}%" title="${v}"></div>`).join("")}</div>
-    <div class="hours-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
-    <h3>לפי ימים בשבוע</h3>
-    <div class="bars">${st.week.map((v, i) => `<div class="bar"><div class="lbl"><span>${wnames[i]}</span><span class="ltr">${num(v)}</span></div><div class="track"><div class="fill" style="width:${(v / wmax * 100).toFixed(1)}%;background:var(--accent)"></div></div></div>`).join("")}</div>
-    ${allMonths.length > 1 ? `<h3>לאורך הזמן</h3>${svg}<div class="hours-axis"><span>${allMonths[0]}</span><span>${allMonths[allMonths.length - 1]}</span></div>` : ""}`;
-
-  const topN = (map, n) => [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, n);
-  const emo = topN(st.allEmoji, 12);
-  $("wordsCard").innerHTML = `
-    <h2>🔤 המילים של כל אחד</h2>
-    ${shown.slice(0, duo ? 2 : 6).map((p, i) => {
-      const w = topN(p.vocab, 10);
-      return `<h3><span class="dot" style="background:${col(i)}"></span>${nm(p.name)}</h3>
-        <div class="chips">${w.length ? w.map(([k, c]) => `<span class="chip">${esc(k)}<i class="ltr">${c}</i></span>`).join("") : '<span class="muted small">כמעט לא כותב/ת מילים</span>'}</div>`;
-    }).join("")}
-    ${emo.length ? `<h3>האימוג'ים של השיחה</h3><div class="chips">${emo.map(([k, c]) => `<span class="chip">${k}<i class="ltr">${c}</i></span>`).join("")}</div>` : ""}`;
-
-  const lg = st.longestGap;
-  const longest = [...st.people].sort((a, b) => b.longest.length - a.longest.length)[0];
-  $("recordsCard").innerHTML = `
-    <h2>🏆 שיאים</h2>
-    <div class="stats">
-      <div class="stat"><b class="ltr">${num(st.streak)}</b>ימים ברצף בלי לוותר אף יום</div>
-      <div class="stat"><b class="ltr">${st.busiest ? num(st.busiest.v) : 0}</b>הודעות ביום הכי עמוס${st.busiest ? ` (${fmtDate(new Date(st.busiest.k + "T12:00:00"))})` : ""}</div>
-      <div class="stat"><b>${dur(lg.ms)}</b>השקט הכי ארוך${lg.back ? `. מי ששבר אותו: ${nm(lg.back)}` : ""}</div>
-      <div class="stat"><b class="ltr">${num(longest.longest.length)}</b>תווים בהודעה הכי ארוכה, של ${nm(longest.name)}</div>
-    </div>
-    ${st.deleted || st.media ? `<p class="small muted" style="margin-top:10px">${num(st.media)} קבצי מדיה${st.deleted ? ` ו-${num(st.deleted)} הודעות שנמחקו. מעניין מה היה כתוב שם.` : "."}</p>` : ""}`;
-
-  $("aiOut").classList.add("hidden");
-  $("aiBtn").textContent = "✨ לקבל את הדוח המלא";
-  drawCard();
+function wizard(step){
+  W.step = step; W.err = "";
+  show("vWizard");
+  renderStep();
 }
 
-/* ---------- AI prompt ---------- */
+function renderStep(){
+  const s = W.step;
+  $("wBar").style.width = (s / 7 * 100) + "%";
+  $("wCount").innerHTML = `<span class="ltr">${s}</span> מתוך <span class="ltr">7</span>`;
+  const b = $("wBody");
+  const err = W.err ? `<div class="err">${esc(W.err)}</div>` : "";
 
-function buildPrompt(){
-  const {parsed, st} = STATE;
-  const budget = PROMPT_BUDGET;
-  const anon = $("anon").checked;
-  const letters = "אבגדהוזחטיכלמנסעפצקרשת";
-  const alias = new Map(st.people.map((p, i) => [p.name, anon ? `משתתף ${letters[i] || i + 1}` : p.name]));
-  const fmt = m => {
-    const d = m.t;
-    return `${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(2)} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} ${alias.get(m.sender)}: ${m.media ? "[מדיה]" : m.text.replace(/\n+/g, " / ")}`;
-  };
-  const lines = parsed.msgs.map(fmt);
-  let total = 0;
-  for (const l of lines) total += l.length + 1;
-  let body, note;
-  if (total <= budget){ body = lines.join("\n"); note = "השיחה המלאה"; }
-  else {
-    const head = [], tail = [];
-    let used = 0;
-    for (const l of lines){ if (used + l.length > budget * .25) break; head.push(l); used += l.length + 1; }
-    for (let i = lines.length - 1; i >= head.length; i--){ if (used + lines[i].length > budget) break; tail.unshift(lines[i]); used += lines[i].length + 1; }
-    body = head.join("\n") + "\n\n[...דילגתי על חלק מהאמצע...]\n\n" + tail.join("\n");
-    note = `קטע מתוך השיחה: ${head.length} ההודעות הראשונות ו-${tail.length} האחרונות, מתוך ${lines.length}`;
+  if (s === 1){
+    b.innerHTML = `<div class="q">איזה צ'אט תרצו ש${PERSONA} ינתח?</div>` +
+      CONTEXTS.map(c => `<button class="opt${W.context === c.k ? " sel" : ""}" data-act="ctx" data-k="${c.k}"><span class="ic" style="background:${c.bg}">${c.e}</span><span><b>${c.t}</b><small>${c.s}</small></span></button>`).join("");
   }
-  const statLines = st.people.slice(0, 12).map(p =>
-    `- ${alias.get(p.name)}: ${p.msgs} הודעות (${pct(p.msgs / st.total)}%), ${p.avgWords.toFixed(1)} מילים להודעה, פתח/ה ${p.init} שיחות, זמן תגובה חציוני ${dur(p.medReply)}, ${p.questions} שאלות, ${p.laughs} צחוקים, ${p.chase} פעמים שלח/ה עוד הודעה בלי לקבל תשובה, ${p.night} הודעות בין חצות לחמש`).join("\n");
-  const duo = st.people.length === 2;
-  return `אתה "${PERSONA}", מנתח שיחות וואטסאפ ישיר, חד ומצחיק, אבל הוגן. אתה לא מלקק ולא מתחנף, ואתה גם לא אכזרי. כתוב בעברית, בגוף שני לקורא, עם הומור יבש.
-
-כללים:
-- תסתמך רק על מה שכתוב בשיחה ובנתונים. אל תמציא. כשאתה טוען משהו, צטט הודעה קצרה (תאריך + מי + כמה מילים) כראיה.
-- אם משהו לא ברור מהטקסט, תגיד שהוא לא ברור. אתה לא קורא מחשבות.
-- אל תאבחן אף אחד פסיכולוגית ואל תדביק תוויות קליניות.
-
-ענה ב-Markdown פשוט: כותרת ## לכל סעיף, רשימות עם -, הדגשות עם **. בלי טבלאות.
-
-מבנה הדוח:
-1. השורה התחתונה, במשפט אחד.
-2. ${duo ? "מי יותר בעניין, ולמה (עם ראיות)." : "התפקידים בקבוצה: מי מחזיק אותה, מי נעלם, מי מצחיק, מי מתווכח."}
-3. דפוסים שחוזרים: מי פותח, מי סוגר, מי משנה נושא, איך מגיבים להודעות ארוכות.
-4. דגלים ירוקים 🟢 ודגלים אדומים 🔴, שלושה מכל סוג לכל היותר.
-5. בדיחות פנימיות ומילים שחוזרות.
-6. איך השיחה השתנתה לאורך הזמן.
-7. ציון לקשר מ-1 עד 10, עם נימוק של שורה.
-8. עצה אחת, קונקרטית, לכל משתתף${duo ? "" : " מרכזי"}.
-
-נתונים שחושבו על כל השיחה (${st.total} הודעות, ${fmtDate(st.first)} עד ${fmtDate(st.last)}):
-${statLines}
-- הרצף הכי ארוך: ${st.streak} ימים. השקט הכי ארוך: ${dur(st.longestGap.ms)}.
-
-השיחה (${note}):
-${body}`;
+  else if (s === 2){
+    b.innerHTML = `<div class="q">מאיזה טלפון הצ'אט?</div>
+      <button class="opt" data-act="phone" data-k="ios"><span class="ic" style="background:#eee">🍏</span><span><b>אייפון</b><small>WhatsApp באייפון</small></span></button>
+      <button class="opt" data-act="phone" data-k="android"><span class="ic" style="background:#e3f7e9">🤖</span><span><b>אנדרואיד</b><small>WhatsApp בסמסונג, שיאומי, פיקסל…</small></span></button>`;
+  }
+  else if (s === 3){
+    const guide = W.phone === "ios"
+      ? `<ol><li>פותחים את הצ'אט בוואטסאפ.</li><li>לוחצים על השם (או שם הקבוצה) למעלה.</li><li>גוללים למטה ← <b>ייצוא צ'אט</b> ← <b>ללא מדיה</b>.</li><li>בוחרים <b>שמירה בקבצים</b>, וחוזרים לכאן לבחור את קובץ ה-zip.</li></ol>`
+      : `<ol><li>פותחים את הצ'אט בוואטסאפ.</li><li>לוחצים על <b>⋮</b> למעלה ← <b>עוד</b> ← <b>ייצוא צ'אט</b>.</li><li>בוחרים <b>ללא מדיה</b>.</li><li>שומרים לקבצים (או שולחים לעצמכם במייל), וחוזרים לכאן לבחור את הקובץ.</li></ol>`;
+    const found = W.st ? `<div class="found">✅ מצאנו <span class="ltr">${num(W.st.total)}</span> הודעות של ${W.st.people.length > 2 ? `<span class="ltr">${W.st.people.length}</span> משתתפים` : W.st.people.map(p => `<bdi>${esc(p.name)}</bdi>`).join(" ו")}</div>` : "";
+    b.innerHTML = `<div class="q">העלו את הצ'אט מוואטסאפ</div>
+      <label class="drop" id="drop" for="file">
+        <svg width="52" height="64" viewBox="0 0 52 64" fill="none" stroke="#111" stroke-width="2.5"><path d="M4 8a5 5 0 0 1 5-5h22l17 17v35a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M31 3v17h17"/><path d="M26 27v16m-6-6 6 6 6-6"/><text x="26" y="56" font-size="10" font-family="Arial" font-weight="700" text-anchor="middle" fill="#111" stroke="none">ZIP</text></svg>
+        <b style="margin-top:8px">לחצו להעלאה</b><span class="small muted">או גררו לכאן</span>
+        <span class="priv">🔒 הספירה והחישובים רצים אצלכם בטלפון</span>
+      </label>
+      ${found}${err}
+      <details class="guide" ${W.st ? "" : "open"}><summary style="cursor:pointer;font-weight:600;min-height:40px">איך מייצאים מ${W.phone === "ios" ? "אייפון" : "אנדרואיד"}?</summary>${guide}</details>
+      <button class="btn dark" data-act="next3" ${W.st ? "" : "disabled"}>המשך</button>`;
+    const drop = $("drop");
+    ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+    drop.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) loadFile(f); });
+  }
+  else if (s === 4){
+    const ps = W.st.people.slice(0, 12);
+    b.innerHTML = `<div class="q">מי אתם בשיחה?</div>` +
+      ps.map((p, i) => `<button class="opt${W.me === p.name ? " sel" : ""}" data-act="me" data-i="${i}"><span class="ic" style="background:${["#ffd1ea","#ffe9a8","#cfdcff","#c9f3e2","#e6defe","#ffd9c6"][i % 6]}">${["👤","🙋","🧑","👩","🧔","👱"][i % 6]}</span><span><b><bdi>${esc(p.name)}</bdi></b></span><span class="n ltr">${num(p.msgs)} הודעות</span></button>`).join("") +
+      `<button class="opt${W.me === null ? " sel" : ""}" data-act="me" data-i="-1"><span class="ic" style="background:#eee">👀</span><span><b>אני לא בשיחה</b><small>רק מסתכל מהצד</small></span></button>` +
+      (W.st.people.length > 12 ? `<p class="small muted">מוצגים 12 הפעילים ביותר מתוך ${W.st.people.length}.</p>` : "");
+  }
+  else if (s === 5){
+    const qs = QUESTIONS[W.context] || QUESTIONS.other;
+    b.innerHTML = `<div class="q">מה הכי בא לכם לדעת?</div>
+      <div class="qchips">${qs.map((q, i) => `<button class="qchip${W.qs.has(q) ? " sel" : ""}" data-act="qchip" data-i="${i}">${esc(q)}</button>`).join("")}</div>
+      <textarea id="qtext" maxlength="400" placeholder="או כתבו במילים שלכם… (לא חובה)">${esc(W.qtext)}</textarea>
+      <button class="btn dark" data-act="next5">המשך</button>`;
+  }
+  else if (s === 6){
+    if (!W.codeSent){
+      b.innerHTML = `<div class="q">לאן לשלוח את הדוח?</div>
+        <p class="muted" style="margin-top:-8px">נשלח לכם קוד לאימות, ואחר כך לינק לדוח המלא.</p>
+        <input type="email" id="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="you@gmail.com" value="${esc(W.email)}">
+        ${err}<button class="btn dark" data-act="sendcode">שלחו לי קוד</button>`;
+    } else {
+      b.innerHTML = `<div class="q">הכניסו את הקוד</div>
+        <p class="muted" style="margin-top:-8px">שלחנו קוד בן 6 ספרות ל-<span class="ltr">${esc(W.email)}</span>. לפעמים הוא מגיע לספאם.</p>
+        <input class="code" id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••">
+        ${err}<button class="btn dark" data-act="verify">אימות</button>
+        <button class="linkbtn" data-act="recode">לא הגיע? לשלוח שוב / לשנות מייל</button>`;
+    }
+    setTimeout(() => (b.querySelector("input") || {}).focus?.(), 50);
+  }
+  else if (s === 7){
+    b.innerHTML = `<div class="loading"><div class="rings"><span class="bj lg">😎</span></div>
+      <div class="lline" id="lline"></div><div class="lbar"><i id="lbar"></i></div>
+      ${err}${W.err ? `<button class="btn dark" data-act="retry">לנסות שוב</button>` : ""}</div>`;
+    if (!W.err) generate();
+  }
 }
 
-// Minimal markdown → HTML for the model's answer; everything is escaped first.
-function mdToHtml(md){
-  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<i>$2</i>");
-  const out = [];
-  let list = null;
-  const close = () => { if (list){ out.push(`</${list}>`); list = null; } };
-  for (const raw of md.split("\n")){
-    const line = raw.trim();
-    let m;
-    if (!line){ close(); continue; }
-    if ((m = /^#{1,6}\s+(.*)$/.exec(line))){ close(); out.push(`<h3>${inline(m[1])}</h3>`); continue; }
-    if ((m = /^[-*•]\s+(.*)$/.exec(line))){ if (list !== "ul"){ close(); out.push("<ul>"); list = "ul"; } out.push(`<li>${inline(m[1])}</li>`); continue; }
-    if ((m = /^\d+[.)]\s+(.*)$/.exec(line))){ if (list !== "ol"){ close(); out.push("<ol>"); list = "ol"; } out.push(`<li>${inline(m[1])}</li>`); continue; }
-    close(); out.push(`<p>${inline(line)}</p>`);
-  }
-  close();
-  return out.join("");
-}
-
-$("aiBtn").addEventListener("click", async () => {
-  const btn = $("aiBtn"), out = $("aiOut");
-  btn.disabled = true;
-  btn.textContent = `⏳ ${PERSONA} קורא את השיחה… (עד דקה)`;
-  out.classList.add("hidden");
+async function loadFile(file){
+  W.err = "";
   try {
-    const r = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({prompt:buildPrompt()})});
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok || !data.text) throw new Error(data.message || "משהו השתבש. נסו שוב בעוד רגע.");
-    out.innerHTML = mdToHtml(data.text);
-    out.classList.remove("hidden");
-    btn.textContent = "🔄 לכתוב דוח חדש";
-    out.scrollIntoView({behavior:"smooth", block:"start"});
-  } catch (err){
-    toast(err.message === "Failed to fetch" ? "אין חיבור לשרת. בדקו אינטרנט ונסו שוב." : err.message);
-    btn.textContent = "✨ לקבל את הדוח המלא";
-  } finally {
-    btn.disabled = false;
-  }
-});
+    const buf = await file.arrayBuffer();
+    const u8 = new Uint8Array(buf);
+    const text = (u8[0] === 0x50 && u8[1] === 0x4b) ? await readZip(buf) : new TextDecoder().decode(buf);
+    const parsed = parseChat(text);
+    if (!parsed || parsed.msgs.length < 10) throw new Error("לא הצלחנו לזהות פה צ'אט של וואטסאפ. ודאו שבחרתם את הקובץ שוואטסאפ יצר בייצוא.");
+    const st = analyze(parsed);
+    if (st.people.length < 2) throw new Error("מצאנו רק משתתף אחד. צריך לפחות שניים.");
+    W.parsed = parsed; W.st = st;
+    W.title = file.name.replace(/\.(txt|zip)$/i, "").replace(/^WhatsApp Chat( with| - )?\s*/i, "").replace(/^צ'?אט WhatsApp עם\s*/, "").trim();
+  } catch (e){ W.err = e.message || String(e); W.st = null; }
+  renderStep();
+}
+$("file").addEventListener("change", e => { const f = e.target.files[0]; if (f) loadFile(f); e.target.value = ""; });
 
-/* ---------- share card ---------- */
+async function post(url, body){
+  const r = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  const data = await r.json().catch(() => ({error:true, message:"תקלה בתקשורת. נסו שוב."}));
+  if (!r.ok || data.error) throw Object.assign(new Error(data.message || "משהו השתבש."), data);
+  return data;
+}
+
+const LOAD_LINES = () => {
+  const st = W.st, other = st.people.find(p => p.name !== W.me) || st.people[0];
+  return [
+    `${PERSONA} קורא <span class="ltr">${num(st.total)}</span> הודעות…`,
+    `סופר כמה פעמים כתבתם "חחח"…`,
+    `בודק מי פתח את השיחה ב-<span class="ltr">${pct(compactStats(st).opener.p)}%</span> מהפעמים…`,
+    `מסתכל על ההודעות של <bdi>${esc(other.name)}</bdi> אחרי חצות…`,
+    `מחפש את השבוע שבו משהו השתנה…`,
+    `מוצא את השקט הכי ארוך (<span class="ltr">${esc(durHe(st.longestGap.ms))}</span>)…`,
+    `כותב. מוחק. כותב שוב…`,
+  ];
+};
+
+async function generate(){
+  const lines = LOAD_LINES();
+  let i = 0, prog = 0;
+  const tick = () => {
+    const el = $("lline"); if (!el) return;
+    el.style.opacity = 0;
+    setTimeout(() => { el.innerHTML = lines[i++ % lines.length]; el.style.opacity = 1; }, 250);
+    prog = Math.min(92, prog + (92 - prog) * .12);
+    const bar = $("lbar"); if (bar) bar.style.width = prog + "%";
+  };
+  tick();
+  const timer = setInterval(tick, 3200);
+  try {
+    const st = W.st;
+    const questions = [...W.qs, W.qtext].filter(Boolean).join(" | ");
+    const res = await post("/api/report", {
+      token: W.token, lines: chatLines(W.parsed), statsText: statsText(st), context: W.context, me: W.me || "",
+      questions, people: st.people.map(p => p.name), title: W.title || st.people.filter(p => p.name !== W.me).slice(0, 2).map(p => p.name).join(" ו"),
+      stats: compactStats(st, W.me),
+    });
+    clearInterval(timer);
+    try { localStorage.setItem("own:" + res.id, res.owner); } catch {}
+    history.pushState({}, "", "/r/" + res.id);
+    renderReport(res, {own:true});
+  } catch (e){
+    clearInterval(timer);
+    if (e.needEmail){ W.codeSent = false; W.token = null; wizard(6); return; }
+    W.err = e.message;
+    renderStep();
+  }
+}
+
+/* =================== report page =================== */
+
+function donut(parts){
+  let off = 25;
+  const segs = parts.map(p => { const s = `<circle r="15.915" cx="21" cy="21" fill="none" stroke="${p.c}" stroke-width="6.5" stroke-dasharray="${(p.v * 100).toFixed(2)} ${(100 - p.v * 100).toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}"/>`; off -= p.v * 100; return s; });
+  return `<svg viewBox="0 0 42 42" aria-hidden="true">${segs.join("")}</svg>`;
+}
+
+function richText(s){
+  return esc(s).split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g, "<br>").replace(/(&quot;|“|״)([^<]{2,220}?)(&quot;|”|״)/g, '<span class="q-quote">"$2"</span>').replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")}</p>`).join("");
+}
+
+function renderReport(rec, opts = {}){
+  show("vReport");
+  const cs = rec.stats, r = rec.report;
+  const label = n => cs && cs.me && n === cs.me ? "אני" : n;
+  const isGroup = cs ? cs.people.length + cs.others > 2 : (r.awards || []).length > 0;
+  let tiles = "";
+  if (cs){
+    const parts = cs.people.slice(0, 5).map((p, i) => ({n:label(p.n), v:p.m / cs.total, c:pc(i)}));
+    const rest = cs.total - cs.people.slice(0, 5).reduce((a, p) => a + p.m, 0);
+    if (rest > 0) parts.push({n:"כל השאר", v:rest / cs.total, c:"#cfc6f5"});
+    const pk = cs.hours.indexOf(Math.max(...cs.hours)), hmax = Math.max(...cs.hours, 1);
+    const resp = cs.people.filter(p => p.r != null).slice(0, 5);
+    const rmax = Math.max(...resp.map(p => p.r), 1);
+    const sil = durShort(cs.silence.ms);
+    tiles = `<div class="bento">
+      <div class="tile mint"><div class="lab">הודעות</div><div class="val">${num(cs.total)}</div></div>
+      <div class="tile yellow"><div class="lab">ימים</div><div class="val">${num(cs.days)}</div></div>
+      <div class="tile lav wide"><div class="lab">מי מדבר יותר</div>
+        <div class="donutrow">${donut(parts)}<ul class="legend">${parts.map(p => `<li><span class="p">${pct(p.v)}%</span><span class="d" style="background:${p.c}"></span><bdi>${esc(p.n)}</bdi></li>`).join("")}</ul></div></div>
+      <div class="tile peach"><div class="lab">פתיחת השיחה</div><div class="val">${pct(cs.opener.p)}%</div><div class="small" style="font-weight:600;text-align:left"><bdi>${esc(label(cs.opener.n))}</bdi></div></div>
+      <div class="tile pink"><div class="lab">אחרי חצות</div><div class="val">${pct(cs.night)}%</div></div>
+      ${resp.length ? `<div class="tile peach wide"><div class="lab">זמן תגובה רגיל</div><div class="rbars">${resp.map((p, i) => { const d = durShort(p.r); return `<div class="row"><span><bdi>${esc(label(p.n))}</bdi></span><span class="tr"><i style="width:${Math.max(4, p.r / rmax * 100)}%;background:${pc(cs.people.indexOf(p))}"></i></span><span class="ltr">${d.v} ${d.u}</span></div>`; }).join("")}</div></div>` : ""}
+      <div class="tile lav ${cs.audio ? "" : "wide"}"><div class="lab">השעה העמוסה</div><div class="hist">${cs.hours.map((v, h) => `<i class="${h === pk ? "pk" : ""}" style="height:${Math.max(3, v / hmax * 100)}%"></i>`).join("")}</div><div class="val" style="font-size:24px">${pk}:00</div></div>
+      ${cs.audio ? `<div class="tile mint"><div class="lab">הודעות קוליות</div><div class="val">${num(cs.audio)}</div></div>` : ""}
+      ${cs.emoji.length ? `<div class="tile yellow"><div class="lab">אימוג'ים מובילים</div><div class="emo">${cs.emoji.join(" ")}</div></div>` : ""}
+      <div class="tile pink ${cs.emoji.length ? "" : "wide"}"><div class="lab">השקט הכי ארוך</div><div class="val">${sil.v}<small>${sil.u === "ימים" ? "ימים" : sil.u}</small></div></div>
+    </div>`;
+  }
+  const secs = (r.sections || []).map(s => `<article class="sec"><h3><span class="e">${esc(s.emoji)}</span><span>${esc(s.title)}</span></h3>${richText(s.body)}</article>`).join("");
+  const awardBg = ["yellow","lav","mint","peach","pink"];
+  const awards = (r.awards || []).length ? `<h2 style="margin:34px 0 10px;font-size:26px">🏆 הפרסים</h2><div class="awards">${r.awards.map((a, i) => `<div class="award ${awardBg[i % 5]}"><div class="t">${esc(a.emoji)} ${esc(a.title)}</div><div class="w"><bdi>${esc(a.winner)}</bdi></div><div>${esc(a.why)}</div></div>`).join("")}</div>` : "";
+  const score = r.score ? `<div class="score"><div class="num">${r.score}<small>/10</small></div><div><div class="small" style="opacity:.7;font-weight:600">${isGroup ? "ציון לקבוצה" : "ציון לקשר"}</div><div style="font-weight:600">${esc(r.score_label)}</div></div></div>` : "";
+  const owner = (() => { try { return localStorage.getItem("own:" + rec.id); } catch { return null; } })();
+
+  $("rBody").innerHTML = `
+    <div class="rhead"><span class="bj lg">😎</span>
+      <div class="who">מה ${PERSONA} חושב על</div><div class="ttl"><bdi>${esc(rec.title || "הצ'אט")}</bdi></div>
+      ${opts.demo ? `<span class="demo-tag">דמו · שיחה מומצאת</span>` : ""}</div>
+    ${tiles}
+    ${r.headline ? `<div class="headline">"${esc(r.headline)}"</div>` : ""}
+    ${score}${secs}${awards}
+    ${r.bottom_line ? `<div class="bottom"><div class="lab">השורה התחתונה</div><p>${esc(r.bottom_line)}</p></div>` : ""}
+    ${opts.demo ? `<button class="cta" style="width:100%;margin-top:14px" data-act="start">עכשיו הצ'אט שלכם ←</button>` : `
+    <div class="share">
+      <button class="btn" data-act="copylink">🔗 העתקת לינק</button>
+      <a class="btn" href="https://wa.me/?text=${encodeURIComponent(`תראו מה ${PERSONA} חושב 👀 ${location.origin}/r/${rec.id}`)}" target="_blank" rel="noopener">💬 שליחה בוואטסאפ</a>
+      <button class="btn" data-act="shareimg">📸 תמונה לסטורי</button>
+      <button class="btn" data-act="start">✨ צ'אט חדש</button>
+    </div>
+    ${owner ? `<button class="linkbtn" data-act="delete" data-id="${esc(rec.id)}">למחוק את הדוח מהשרת</button>` : ""}
+    <p class="small muted" style="text-align:center">הלינק פעיל 30 יום.</p>`}`;
+  CURRENT = rec;
+}
+let CURRENT = null;
+
+async function openSaved(id){
+  show("vReport");
+  $("rBody").innerHTML = `<div class="loading"><div class="rings"><span class="bj lg">😎</span></div><div class="lline">טוען את הדוח…</div></div>`;
+  try {
+    const r = await fetch("/api/r/" + encodeURIComponent(id));
+    const rec = await r.json();
+    if (!r.ok) throw new Error(rec.message);
+    renderReport(rec);
+  } catch (e){
+    $("rBody").innerHTML = `<div class="loading"><div class="lline">${esc(e.message || "הדוח לא נמצא.")}</div><button class="cta" data-act="start" style="margin-top:20px">לנתח צ'אט ←</button></div>`;
+  }
+}
+
+/* =================== share image =================== */
 
 function wrapText(ctx, text, maxW){
   const words = text.split(" "), lines = [];
   let line = "";
-  for (const w of words){
-    const t = line ? line + " " + w : w;
-    if (ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; } else line = t;
-  }
+  for (const w of words){ const t = line ? line + " " + w : w; if (ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; } else line = t; }
   if (line) lines.push(line);
   return lines;
 }
-
-function drawCard(){
-  const {st} = STATE;
-  const c = $("cardCanvas"), ctx = c.getContext("2d");
-  const W = c.width, H = c.height;
-  const g = ctx.createLinearGradient(0, 0, W, H);
-  g.addColorStop(0, "#0f8a5f"); g.addColorStop(1, "#0b3d5c");
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  ctx.direction = "rtl"; ctx.textAlign = "right"; ctx.fillStyle = "#fff";
-  const F = "system-ui, -apple-system, 'Segoe UI', Arial, sans-serif";
-  const R = W - 90;
-  ctx.font = `700 56px ${F}`; ctx.fillText(`מה ${PERSONA} חושב?`, R, 150);
-  ctx.globalAlpha = .75; ctx.font = `400 34px ${F}`;
-  ctx.fillText(`${num(st.total)} הודעות · ${fmtDate(st.first)} – ${fmtDate(st.last)}`, R, 210);
-  ctx.globalAlpha = 1;
-
-  ctx.font = `700 64px ${F}`;
-  let y = 360;
-  for (const l of wrapText(ctx, STATE.headline, W - 180).slice(0, 5)){ ctx.fillText(l, R, y); y += 84; }
-
-  y = Math.max(y + 40, 820);
-  const ps = st.people.slice(0, st.people.length === 2 ? 2 : 4);
-  ctx.font = `600 40px ${F}`;
-  for (let i = 0; i < ps.length; i++){
-    const p = ps[i];
-    const val = st.people.length === 2 && STATE.score != null ? (i === 0 ? STATE.score : 1 - STATE.score) : p.msgs / st.total;
-    ctx.fillStyle = "#fff"; ctx.textAlign = "right";
-    ctx.fillText(p.name.slice(0, 22), R, y);
-    ctx.textAlign = "left"; ctx.fillText(pct(val) + "%", 90, y);
-    ctx.fillStyle = "rgba(255,255,255,.2)"; roundRect(ctx, 90, y + 22, W - 180, 26, 13);
-    ctx.fillStyle = ["#7ef0c0", "#ffb38f", "#a9c3ff", "#e7b5f5"][i];
-    const w = (W - 180) * val; roundRect(ctx, 90 + (W - 180) - w, y + 22, w, 26, 13);
-    y += 120;
+function shareImage(){
+  const rec = CURRENT, c = $("cardCanvas"), ctx = c.getContext("2d"), W_ = c.width, H = c.height;
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W_, H);
+  const tiles = [["#bdf1dc", 0, 0], ["#ffeeb3", 1, 0], ["#ddd6ff", 0, 1], ["#ffcbdc", 1, 1]];
+  ctx.direction = "rtl"; ctx.textAlign = "center";
+  const F = "Rubik, system-ui, Arial, sans-serif";
+  ctx.font = `120px ${F}`; ctx.fillText("😎", W_ / 2, 190);
+  ctx.fillStyle = "#111"; ctx.font = `600 46px ${F}`; ctx.fillText(`מה ${PERSONA} חושב על`, W_ / 2, 280);
+  ctx.font = `700 64px ${F}`; ctx.fillText((rec.title || "").slice(0, 28), W_ / 2, 360);
+  ctx.font = `700 58px ${F}`;
+  let y = 500;
+  for (const l of wrapText(ctx, `"${rec.report.headline || ""}"`, W_ - 160).slice(0, 5)){ ctx.fillText(l, W_ / 2, y); y += 76; }
+  if (rec.stats){
+    const cs = rec.stats, vals = [[num(cs.total), "הודעות"], [pct(cs.opener.p) + "%", "פתיחת השיחה"], [pct(cs.night) + "%", "אחרי חצות"], [rec.report.score ? rec.report.score + "/10" : num(cs.days), rec.report.score ? "ציון" : "ימים"]];
+    const top = Math.max(y + 30, 900), tw = (W_ - 200) / 2, th = 170;
+    tiles.forEach(([bg, cx, cy], i) => {
+      const x = 80 + cx * (tw + 40), yy = top + cy * (th + 30);
+      ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, yy, tw, th, 28) : ctx.rect(x, yy, tw, th); ctx.fill();
+      ctx.fillStyle = "#111"; ctx.font = `700 64px ${F}`; ctx.fillText(vals[i][0], x + tw / 2, yy + 92);
+      ctx.font = `500 32px ${F}`; ctx.fillText(vals[i][1], x + tw / 2, yy + 140);
+    });
   }
-  ctx.fillStyle = "rgba(255,255,255,.7)"; ctx.textAlign = "center"; ctx.font = `400 30px ${F}`;
-  ctx.fillText(st.people.length === 2 ? "מד ההשקעה" : "חלק בשיחה", W / 2, H - 120);
-  ctx.fillText("נותח בטלפון, בלי לשלוח את השיחה לאף אחד", W / 2, H - 70);
-}
-function roundRect(ctx, x, y, w, h, r){
-  if (w <= 0) return;
-  r = Math.min(r, w / 2, h / 2);
-  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); ctx.fill();
-}
-
-$("shareImg").addEventListener("click", () => {
-  $("cardCanvas").toBlob(async blob => {
-    const file = new File([blob], "chat-verdict.png", {type:"image/png"});
+  ctx.fillStyle = "#888"; ctx.font = `400 30px ${F}`; ctx.fillText(location.host, W_ / 2, H - 50);
+  c.toBlob(async blob => {
+    const file = new File([blob], "blackjack.png", {type:"image/png"});
     if (navigator.canShare && navigator.canShare({files:[file]})){
-      try { await navigator.share({files:[file], title:`מה ${PERSONA} חושב`}); return; } catch (e){ if (e.name === "AbortError") return; }
+      try { await navigator.share({files:[file]}); return; } catch (e){ if (e.name === "AbortError") return; }
     }
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = "chat-verdict.png"; a.click();
+    a.href = URL.createObjectURL(blob); a.download = "blackjack.png"; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   }, "image/png");
-});
+}
 
-/* ---------- demo chat ---------- */
+/* =================== demo =================== */
 
-function demoChat(){
+function demoPartner(){
   let seed = 7;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const pick = a => a[Math.floor(rnd() * a.length)];
   const A = "נועה", B = "איתי";
-  const aSays = ["היי מה קורה?", "ראית את מה ששלחתי?", "חחחחח אני מתה", "אז מה אתה עושה היום?", "בא לך לצאת בשבוע הבא?", "סיפרתי לך על העבודה החדשה? זה מטורף, הבוס שלי החליט שכולם עובדים מהמשרד בימי שלישי ואני עוד לא יודעת איך זה ישתלב עם הקורס", "😂😂", "נו??", "אתה חי?", "לילה טוב ❤️", "מתגעגעת", "מה אתה אומר על פיצה?", "יאללה סגרנו", "אני בדרך", "אתה זוכר את הפלאפל ההוא בפלורנטין?", "טוב אני הולכת לישון"];
+  const aSays = ["היי מה קורה?", "ראית את מה ששלחתי?", "חחחחח אני מתה", "אז מה אתה עושה היום?", "בא לך לצאת בשבוע הבא?", "סיפרתי לך על העבודה החדשה? הבוס החליט שכולם במשרד בימי שלישי ואני לא יודעת איך זה ישתלב עם הקורס", "😂😂", "נו??", "אתה חי?", "לילה טוב ❤️", "מתגעגעת", "מה אתה אומר על פיצה?", "יאללה סגרנו", "אני בדרך", "אתה זוכר את הפלאפל ההוא בפלורנטין?", "טוב אני הולכת לישון"];
   const bSays = ["טוב", "סבבה", "חחח", "כן", "אולי", "עסוק קצת", "נדבר", "👍", "מה נשמע", "פלאפל כמובן", "יאללה", "לא יודע עדיין", "סורי נרדמתי", "אחלה"];
-  const out = [];
+  const out = [], f = n => String(n).padStart(2, "0");
   let t = new Date(2026, 2, 1, 9, 0);
   for (let day = 0; day < 200; day++){
-    if (rnd() < .22) { t = new Date(t.getTime() + 864e5); continue; }
+    if (rnd() < .22){ t = new Date(t.getTime() + 864e5); continue; }
     const fade = day > 150 ? .45 : 1;
     let cur = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 8 + Math.floor(rnd() * 15), Math.floor(rnd() * 60));
     const n = Math.floor((3 + rnd() * 12) * fade);
     let who = rnd() < .78 ? A : B;
     for (let k = 0; k < n; k++){
-      const msg = who === A ? pick(aSays) : pick(bSays);
-      const f = n => String(n).padStart(2, "0");
-      out.push(`${f(cur.getDate())}/${f(cur.getMonth() + 1)}/${cur.getFullYear()}, ${f(cur.getHours())}:${f(cur.getMinutes())} - ${who}: ${msg}`);
+      out.push(`${f(cur.getDate())}/${f(cur.getMonth() + 1)}/${cur.getFullYear()}, ${f(cur.getHours())}:${f(cur.getMinutes())} - ${who}: ${who === A ? pick(aSays) : pick(bSays)}`);
+      // the gap after Noa's message is Itai's reply time, so that one is long
       const gap = who === A ? (rnd() < .3 ? 60 + rnd() * 240 : 2 + rnd() * 30) : 1 + rnd() * 6;
       cur = new Date(cur.getTime() + gap * 60e3);
       if (who === A && rnd() < .25) continue;
       who = who === A ? B : A;
     }
-    if (rnd() < .2) out.push(`${String(cur.getDate()).padStart(2,"0")}/${String(cur.getMonth()+1).padStart(2,"0")}/${cur.getFullYear()}, 01:${String(Math.floor(rnd()*60)).padStart(2,"0")} - ${A}: את ער?`);
+    if (rnd() < .15) out.push(`${f(cur.getDate())}/${f(cur.getMonth() + 1)}/${cur.getFullYear()}, 01:${f(Math.floor(rnd() * 60))} - ${A}: אתה ער?`);
     t = new Date(t.getTime() + 864e5);
   }
   return out.join("\n");
 }
+function demoGroup(){
+  let seed = 11;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pick = a => a[Math.floor(rnd() * a.length)];
+  const who = [["דניאל", .34, ["מי בא לכדורגל בשלישי?", "יאללה תתעוררו", "אני מזמין מגרש", "נו אנשים", "חחחח לא נכון", "מי מביא כדור?"]],
+    ["שירה", .26, ["חחחחחחח אני מתה", "😂😂😂", "שלחו תמונות!!", "מי בא לים בשבת?", "אני בפנים"]],
+    ["עומר", .22, ["סבבה", "אני אחרי משמרת", "ברור", "פיצה?", "אמרתי לכם"]],
+    ["מאיה", .14, ["רגע מה קרה פה", "קראתי הכול עכשיו חחח", "אני בעבודה עד מאוחר"]],
+    ["יונתן", .04, ["👍", "אוקי"]]];
+  const out = [], f = n => String(n).padStart(2, "0");
+  let t = new Date(2026, 4, 1, 10, 0);
+  for (let day = 0; day < 140; day++){
+    if (rnd() < .35){ t = new Date(t.getTime() + 864e5); continue; }
+    let cur = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 9 + Math.floor(rnd() * 15), Math.floor(rnd() * 60));
+    const n = 3 + Math.floor(rnd() * 14);
+    for (let k = 0; k < n; k++){
+      let x = rnd(), p = who[0];
+      for (const w of who){ if (x < w[1]){ p = w; break; } x -= w[1]; }
+      out.push(`${f(cur.getDate())}/${f(cur.getMonth() + 1)}/${cur.getFullYear()}, ${f(cur.getHours())}:${f(cur.getMinutes())} - ${p[0]}: ${pick(p[2])}`);
+      cur = new Date(cur.getTime() + (1 + rnd() * 25) * 60e3);
+    }
+    t = new Date(t.getTime() + 864e5);
+  }
+  return out.join("\n");
+}
+const DEMO = {
+  partner: {title:"איתי", me:"נועה", gen:demoPartner, report:{
+    headline:"נועה מחזיקה את השיחה הזאת על הגב. איתי בא לבקר.",
+    score:4, score_label:"חם רק מצד אחד",
+    sections:[
+      {emoji:"🕰️", title:"ה\"נו??\" שחוזר כל שבוע", body:"יש הודעה אחת שמספרת את כל הסיפור, והיא לא ארוכה: \"נו??\".\n\nכתבתם אותה שוב ושוב, תמיד אחרי שאלה ששאלתם ולא קיבלתם עליה תשובה. זה לא חוסר סבלנות. זה מישהו שכבר יודע שאם לא ידחוף, השיחה תמות."},
+      {emoji:"⏱️", title:"הדקות שלכם מול השעות שלו", body:"אתם עונים כמעט מיד. איתי עונה מתי שנוח לו, ולפעמים זה אחרי חצי יום.\n\nוכשהוא כבר עונה, זה \"עסוק קצת\" או \"סורי נרדמתי\". הוא לא נעלם. הוא פשוט לא ממהר. ההבדל הזה הוא הלב של הצ'אט."},
+      {emoji:"🧆", title:"הפלאפל בפלורנטין הוא הרגע הכי טוב שלכם", body:"כששאלתם \"אתה זוכר את הפלאפל ההוא בפלורנטין?\", איתי ענה \"פלאפל כמובן\" ומיד היה פתאום אחר. קצר, אבל חם.\n\nכשיש תוכנית קונקרטית ומשהו משותף, הוא שם. כשזו שיחה פתוחה על היום, הוא מתאדה."},
+      {emoji:"🌙", title:"\"אתה ער?\" בשעה אחת בלילה", body:"יש כמה הודעות כאלה, כולן שלכם. אף אחת מהן לא קיבלה תשובה באותו לילה.\n\nזה לא אומר שהוא לא אוהב אתכם. זה אומר שבשעה אחת בלילה הוא לא חושב על הצ'אט הזה, ואתם כן."},
+      {emoji:"📉", title:"החודש שבו הכול נהיה שקט", body:"בחודשיים האחרונים כמות ההודעות ירדה בערך בחצי. לא בגלל ריב, ואין רגע אחד שבו משהו נשבר.\n\nזה פשוט דעך. בדרך כלל זה אומר שמישהו הפסיק להשקיע, ומהנתונים, זה לא אתם."},
+    ],
+    awards:[], bottom_line:"אתם בעניין. איתי בעניין כשנוח לו. במקום עוד \"נו??\", תציעו תוכנית אחת קונקרטית עם יום ושעה, ותראו מה הוא עושה איתה. התשובה לזה שווה יותר מכל הצ'אט."}},
+  group: {title:"החבר'ה", me:null, gen:demoGroup, report:{
+    headline:"דניאל מנהל את הקבוצה הזאת כמו ועד בית. שירה דואגת שיהיה כיף. יונתן? יונתן קיים.",
+    score:null, score_label:"",
+    sections:[
+      {emoji:"⚽", title:"הכדורגל של שלישי הוא כל הקבוצה", body:"חצי מהשיחות פה מתחילות ב\"מי בא לכדורגל בשלישי?\". דניאל שואל, שירה צוחקת, עומר אחרי משמרת.\n\nבלי השאלה הזאת הקבוצה הייתה שקטה ימים שלמים. זה לא שיש לכם על מה לדבר. זה שיש לכם בשביל מה להיפגש."},
+      {emoji:"😂", title:"שירה צוחקת על הכול, וזה עובד", body:"\"חחחחחחח אני מתה\" זו כנראה ההודעה הכי נפוצה בקבוצה. שירה היא הקהל הכי טוב שיש.\n\nכל בדיחה של מישהו אחר מקבלת ממנה תגובה תוך דקות. בלעדיה, חצי מהבדיחות פה היו נופלות לשקט."},
+      {emoji:"🕵️", title:"מאיה קוראת הכול בסוף היום", body:"\"קראתי הכול עכשיו חחח\" זה הדפוס של מאיה. היא לא נעלמת, היא פשוט מגיעה בערב ומדביקה את כל הפער בבת אחת.\n\nזה לא חוסר עניין. זו מישהי עם יום עבודה ארוך שעדיין טורחת לקרוא."},
+      {emoji:"👻", title:"התרומה של יונתן: אגודל אחד", body:"יונתן כתב בכל התקופה כמה \"👍\" וכמה \"אוקי\", וזהו.\n\nהוא בקבוצה, הוא קורא, הוא אולי אפילו בא לכדורגל. אבל בצ'אט הוא רוח רפאים עם אגודל."},
+    ],
+    awards:[
+      {emoji:"🚂", title:"המנוע של הקבוצה", winner:"דניאל", why:"פותח שליש מהשיחות, ובלי \"יאללה תתעוררו\" שלו הקבוצה הייתה ישנה."},
+      {emoji:"🎤", title:"הקהל הכי טוב", winner:"שירה", why:"\"😂😂😂\" על כל דבר. כל קומיקאי חולם על קהל כזה."},
+      {emoji:"😴", title:"תמיד אחרי משמרת", winner:"עומר", why:"\"אני אחרי משמרת\" זה תירוץ ודרך חיים."},
+      {emoji:"👍", title:"רוח הרפאים", winner:"יונתן", why:"סך כל התרומה: אגודל ו\"אוקי\". מינימליזם."},
+    ],
+    bottom_line:"קבוצה בריאה שמחזיקה בזכות שני אנשים. אם דניאל ייקח הפסקה, אף אחד לא ישאל מי בא בשלישי. מישהו אחר שיציע את המפגש הבא, רק כדי לראות שזה אפשרי."}},
+};
+function openDemo(k){
+  const d = DEMO[k];
+  const st = analyze(parseChat(d.gen()));
+  renderReport({id:"demo", title:d.title, stats:compactStats(st, d.me), report:d.report}, {demo:true});
+}
 
-/* ---------- wiring ---------- */
+/* =================== wiring =================== */
 
-$("file").addEventListener("change", e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; });
-const drop = $("drop");
-["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
-["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
-drop.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
-$("demoBtn").addEventListener("click", () => run(demoChat(), "נועה ואיתי (דוגמה)"));
-$("pasteBtn").addEventListener("click", () => { showError(""); run($("paste").value, ""); });
-$("again").addEventListener("click", () => { $("results").classList.add("hidden"); $("start").classList.remove("hidden"); STATE = null; window.scrollTo({top:0}); });
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  const act = el.dataset.act;
+  if (act === "start"){ resetWizard(); history.pushState({}, "", "/"); wizard(1); }
+  else if (act === "demo") openDemo(el.dataset.demo);
+  else if (act === "back"){
+    if (W.step === 6 && W.codeSent){ W.codeSent = false; renderStep(); }
+    else if (W.step > 1 && W.step < 7) wizard(W.step - 1 === 6 && !CONFIG.email ? 5 : W.step - 1);
+    else { show("vLanding"); }
+  }
+  else if (act === "ctx"){ W.context = el.dataset.k; wizard(2); }
+  else if (act === "phone"){ W.phone = el.dataset.k; wizard(3); }
+  else if (act === "next3"){ wizard(4); }
+  else if (act === "me"){ const i = +el.dataset.i; W.me = i < 0 ? null : W.st.people[i].name; wizard(5); }
+  else if (act === "qchip"){ const q = (QUESTIONS[W.context] || QUESTIONS.other)[+el.dataset.i]; W.qs.has(q) ? W.qs.delete(q) : W.qs.add(q); el.classList.toggle("sel"); }
+  else if (act === "next5"){ W.qtext = $("qtext").value.trim(); wizard(CONFIG.email && !W.token ? 6 : 7); }
+  else if (act === "sendcode" || act === "recode"){
+    if (act === "recode"){ W.codeSent = false; renderStep(); return; }
+    W.email = $("email").value.trim();
+    el.disabled = true; el.textContent = "שולח…";
+    try {
+      const r = await post("/api/code", {email:W.email});
+      if (r.skip){ wizard(7); return; }
+      W.codeSent = true; W.err = "";
+    } catch (err){ W.err = err.message; }
+    renderStep();
+  }
+  else if (act === "verify"){
+    el.disabled = true; el.textContent = "בודק…";
+    try { const r = await post("/api/verify", {email:W.email, code:$("code").value}); W.token = r.token; wizard(7); }
+    catch (err){ W.err = err.message; renderStep(); }
+  }
+  else if (act === "retry"){ W.err = ""; renderStep(); }
+  else if (act === "copylink"){
+    const url = location.origin + "/r/" + CURRENT.id;
+    try { await navigator.clipboard.writeText(url); toast("הלינק הועתק"); } catch { prompt("העתיקו את הלינק:", url); }
+  }
+  else if (act === "shareimg") shareImage();
+  else if (act === "delete"){
+    if (!confirm("למחוק את הדוח? הלינק יפסיק לעבוד.")) return;
+    try {
+      const r = await fetch("/api/r/" + el.dataset.id, {method:"DELETE", headers:{"Content-Type":"application/json"}, body:JSON.stringify({owner:localStorage.getItem("own:" + el.dataset.id)})});
+      if (!r.ok) throw 0;
+      toast("הדוח נמחק"); history.pushState({}, "", "/"); show("vLanding");
+    } catch { toast("המחיקה נכשלה"); }
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  if (e.target.id === "email") document.querySelector('[data-act="sendcode"]')?.click();
+  if (e.target.id === "code") document.querySelector('[data-act="verify"]')?.click();
+});
+document.addEventListener("input", e => {
+  if (e.target.id === "code" && e.target.value.replace(/\D/g, "").length === 6) document.querySelector('[data-act="verify"]')?.click();
+});
 
-if (location.hash === "#demo") run(demoChat(), "נועה ואיתי (דוגמה)");
+function route(){
+  const m = location.pathname.match(/^\/r\/([a-z0-9]{6,20})$/);
+  if (m) openSaved(m[1]);
+  else if (location.hash === "#demo") openDemo("partner");
+  else if (location.hash === "#demo-group") openDemo("group");
+  else show("vLanding");
+}
+window.addEventListener("popstate", route);
+route();
 </script>
 </body>
 </html>

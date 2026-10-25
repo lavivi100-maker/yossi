@@ -1,10 +1,23 @@
 name = "yossi"
 main = "worker.js"
 compatibility_date = "2026-10-01"
-routes = [{ pattern = "yossi.ly-systems.co.il", custom_domain = true }]
+routes = [{ pattern = "blackjack.ly-systems.co.il", custom_domain = true }, { pattern = "yossi.ly-systems.co.il", custom_domain = true }]
 
-# The page itself is served straight from public/; only /api/* reaches worker.js
+# The page is served straight from public/; /api/* reaches worker.js.
+# Unknown paths such as /r/<id> fall back to index.html, which renders the saved report.
 [assets]
 directory = "./public"
 binding = "ASSETS"
 run_worker_first = ["/api/*"]
+not_found_handling = "single-page-application"
+
+[[kv_namespaces]]
+binding = "YOSSI"
+id = "7b0b6b6f138e4b5e9eec6ad7e75aad74"
+
+# Cloudflare's own models: free daily allowance, no key needed
+[ai]
+binding = "AI"
+
+[observability]
+enabled = true
